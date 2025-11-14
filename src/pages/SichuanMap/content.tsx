@@ -1,9 +1,13 @@
 import { useControls } from "leva";
 import { useRef } from "react";
 import styled from "styled-components";
-import useMoveTo from "../../hooks/useMoveTo";
+import useMoveTo from "@/hooks/useMoveTo";
+import SeamVirtualScroll from "@/components/seamVirtualScroll";
+import Chart1 from "./chart1";
+import Chart2 from "./chart2";
+import Chart3 from "./chart3";
 
-import bg from "../../assets/card_bg.jpg";
+import bg from "@/assets/card_bg.jpg";
 
 const Wrapper = styled.div`
   position: relative;
@@ -16,19 +20,22 @@ const Wrapper = styled.div`
 `;
 
 const GridWrapper = styled.div`
-  flex: auto;
+  flex: 1;
+  min-height: 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: 20px;
   padding: 20px;
 `;
 
 const Card = styled.div`
   position: relative;
+  display: flex;
+  flex-direction: column;
   color: #ffffff;
   pointer-events: auto;
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(10px);
 
   &::before {
     content: "";
@@ -54,6 +61,7 @@ const Card = styled.div`
     background-size: 100px;
     opacity: 0.2;
     border-radius: 0px;
+    z-index: -1;
   }
 `;
 
@@ -70,6 +78,12 @@ const Title = styled.div`
   overflow: hidden;
   color: #ffffff;
   padding-left: 20px;
+`;
+
+const CardTitle = styled.div`
+  font-family: "pmzd";
+  font-size: 28px;
+  padding: 8px 16px;
 `;
 
 export default function Content() {
@@ -139,10 +153,39 @@ export default function Content() {
         <Title>四川省地图示例</Title>
       </Card>
       <GridWrapper>
-        <Card ref={leftBoxRef} style={{ gridArea: "1 / 1 / 3 / 2" }}></Card>
-        <Card ref={leftBoxRef1} style={{ gridArea: "3 / 1 / 5 / 2" }}></Card>
-        <Card ref={rightBoxRef} style={{ gridArea: "1 / 4 / 3 / 5" }}></Card>
-        <Card ref={rightBoxRef1} style={{ gridArea: "3 / 4 / 5 / 5" }}></Card>
+        <Card ref={leftBoxRef} style={{ gridArea: "1 / 1 / 3 / 2" }}>
+          <CardTitle>标题</CardTitle>
+          <Chart1 />
+        </Card>
+        <Card ref={leftBoxRef1} style={{ gridArea: "3 / 1 / 5 / 2" }}>
+          <CardTitle>标题</CardTitle>
+          <Chart2 />
+        </Card>
+        <Card ref={rightBoxRef} style={{ gridArea: "1 / 4 / 3 / 5" }}>
+          <CardTitle style={{ textAlign: "right" }}>标题</CardTitle>
+          <Chart3 />
+        </Card>
+        <Card ref={rightBoxRef1} style={{ gridArea: "3 / 4 / 5 / 5" }}>
+          <CardTitle style={{ textAlign: "right" }}>标题</CardTitle>
+          <SeamVirtualScroll
+            rowHeight={50}
+            column={[
+              { title: "设备名称", dataIndex: "value1" },
+              { title: "告警时间", dataIndex: "value2" },
+              { title: "状态", dataIndex: "value3" },
+            ]}
+            data={Array.from({ length: 100 }, (_, k) => ({
+              value1: `设备${k + 1}`,
+              value2: new Date().toLocaleTimeString(),
+              value3:
+                k % 2 === 0 ? (
+                  <div style={{ color: "#7fe5a8" }}>运行中</div>
+                ) : (
+                  "未启动"
+                ),
+            }))}
+          />
+        </Card>
       </GridWrapper>
     </Wrapper>
   );

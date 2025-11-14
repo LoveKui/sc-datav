@@ -4,7 +4,7 @@
  * @LastEditors: Knight
  * @LastEditTime: 2025-11-02 19:34:42
  */
-import SichuanMap from "./components/SichuanMap";
+import SichuanMap from "./pages/SichuanMap";
 
 function App() {
   return <SichuanMap />;

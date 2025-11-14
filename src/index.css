@@ -1,3 +1,9 @@
 body {
   margin: 0;
+  background: #26282a;
+}
+
+@font-face {
+  font-family: "pmzd";
+  src: url("/datav/font/pmzd.woff2") format("woff2");
 }

@@ -10,19 +10,19 @@ import {
   useTexture,
 } from "@react-three/drei";
 import gsap from "gsap";
+import autofit from "autofit.js";
 import styled from "styled-components";
 import { Text } from "@react-three/drei";
 import { folder, Leva, useControls } from "leva";
 import * as THREE from "three";
 import * as d3 from "d3-geo";
+import type { CityGeoJSON } from "@/components/map";
 import OutLine from "./outline";
 import FlyLine from "./flyLine";
-import type { CityGeoJSON } from "../map";
 import Content from "./content";
 
-import sichuanData from "../../assets/sc.json";
-import texturesImg from "../../assets/map.jpeg";
-import autofit from "autofit.js";
+import sichuanData from "@/assets/sc.json";
+import texturesImg from "@/assets/map.jpeg";
 
 const data = sichuanData as CityGeoJSON;
 

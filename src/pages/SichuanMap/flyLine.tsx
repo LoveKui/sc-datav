@@ -4,7 +4,7 @@ import * as THREE from "three";
 import { useControls } from "leva";
 import { type GeoProjection } from "d3-geo";
 
-import scOutlineData from "../../assets/sc_outline.json";
+import scOutlineData from "@/assets/sc_outline.json";
 
 export default function FlyLine({ projection }: { projection: GeoProjection }) {
   const index = useRef(0); //取点索引位置
