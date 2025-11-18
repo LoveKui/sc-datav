@@ -1,5 +1,4 @@
 import { useControls } from "leva";
-import { useRef } from "react";
 import styled from "styled-components";
 import useMoveTo from "@/hooks/useMoveTo";
 import SeamVirtualScroll from "@/components/seamVirtualScroll";
@@ -83,61 +82,30 @@ const CardTitle = styled.div`
 `;
 
 export default function Content() {
-  const topBoxRef = useRef<HTMLDivElement>(null);
-  const leftBoxRef = useRef<HTMLDivElement>(null);
-  const leftBoxRef1 = useRef<HTMLDivElement>(null);
-  const rightBoxRef = useRef<HTMLDivElement>(null);
-  const rightBoxRef1 = useRef<HTMLDivElement>(null);
-
   // 显示主面板
-  const { restart: topRestart, reverse: topReverse } = useMoveTo(
-    topBoxRef,
-    "toBottom",
-    0.6,
-    1
-  );
-  const { restart: leftRestart, reverse: leftReverse } = useMoveTo(
-    leftBoxRef,
-    "toRight",
-    0.8,
-    1.5
-  );
-  const { restart: rightRestart, reverse: rightReverse } = useMoveTo(
-    rightBoxRef,
-    "toLeft",
-    0.8,
-    1.5
-  );
-  const { restart: leftRestart1, reverse: leftReverse1 } = useMoveTo(
-    leftBoxRef1,
-    "toRight",
-    0.8,
-    1.5
-  );
-  const { restart: rightRestart1, reverse: rightReverse1 } = useMoveTo(
-    rightBoxRef1,
-    "toLeft",
-    0.8,
-    1.5
-  );
+  const topBox = useMoveTo("toBottom", 0.6, 1);
+  const leftBox = useMoveTo("toRight", 0.8, 1.5);
+  const leftBox1 = useMoveTo("toRight", 0.8, 1.5);
+  const rightBox = useMoveTo("toLeft", 0.8, 1.5);
+  const rightBox1 = useMoveTo("toLeft", 0.8, 1.5);
 
   useControls({
     showMain: {
       label: "显示内容面板",
       value: true,
-      onChange: (v: boolean) => {
+      onChange: (v: boolean, _, context) => {
         if (v) {
-          topRestart();
-          leftRestart();
-          leftRestart1();
-          rightRestart();
-          rightRestart1();
+          topBox.restart(context.initial);
+          leftBox.restart(context.initial);
+          leftBox1.restart(context.initial);
+          rightBox.restart(context.initial);
+          rightBox1.restart(context.initial);
         } else {
-          topReverse();
-          leftReverse();
-          leftReverse1();
-          rightReverse();
-          rightReverse1();
+          topBox.reverse();
+          leftBox.reverse();
+          leftBox1.reverse();
+          rightBox.reverse();
+          rightBox1.reverse();
         }
       },
     },
@@ -145,23 +113,23 @@ export default function Content() {
 
   return (
     <Wrapper>
-      <Card ref={topBoxRef}>
+      <Card ref={topBox.ref}>
         <Title>四川省地图示例</Title>
       </Card>
       <GridWrapper>
-        <Card ref={leftBoxRef} style={{ gridArea: "1 / 1 / 3 / 2" }}>
+        <Card ref={leftBox.ref} style={{ gridArea: "1 / 1 / 3 / 2" }}>
           <CardTitle>标题</CardTitle>
           <Chart1 />
         </Card>
-        <Card ref={leftBoxRef1} style={{ gridArea: "3 / 1 / 5 / 2" }}>
+        <Card ref={leftBox1.ref} style={{ gridArea: "3 / 1 / 5 / 2" }}>
           <CardTitle>标题</CardTitle>
           <Chart2 />
         </Card>
-        <Card ref={rightBoxRef} style={{ gridArea: "1 / 4 / 3 / 5" }}>
+        <Card ref={rightBox.ref} style={{ gridArea: "1 / 4 / 3 / 5" }}>
           <CardTitle style={{ textAlign: "right" }}>标题</CardTitle>
           <Chart3 />
         </Card>
-        <Card ref={rightBoxRef1} style={{ gridArea: "3 / 4 / 5 / 5" }}>
+        <Card ref={rightBox1.ref} style={{ gridArea: "3 / 4 / 5 / 5" }}>
           <CardTitle style={{ textAlign: "right" }}>标题</CardTitle>
           <SeamVirtualScroll
             rowHeight={50}

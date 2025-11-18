@@ -1,22 +1,20 @@
-import { useRef, useEffect, type RefObject } from "react";
-import gsap from "gsap";
+import { useRef, useEffect } from "react";
+import { gsap } from "gsap";
 
 type Direction = "toBottom" | "toTop" | "toLeft" | "toRight";
 
 const useMoveTo = function (
-  eleRef: RefObject<HTMLDivElement | null>,
   direction: Direction,
   duration: number = 1,
   delay: number = 0,
   fixedTransform: string = ""
 ) {
+  const eleRef = useRef<HTMLDivElement>(null);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
 
-  const restart = () => {
-    if (tweenRef.current) {
-      tweenRef.current.invalidate();
-      tweenRef.current.restart(true);
-    }
+  const restart = (includeDelay = true) => {
+    //   tweenRef.current.invalidate();
+    tweenRef.current?.restart(includeDelay);
   };
 
   const reverse = () => {
@@ -24,7 +22,7 @@ const useMoveTo = function (
   };
 
   useEffect(() => {
-    if (eleRef && eleRef.current) {
+    if (eleRef.current) {
       const transformFrom = {
         toTop: `translate(0px, 100%)`,
         toBottom: `translate(0px, -100%)`,
@@ -52,7 +50,7 @@ const useMoveTo = function (
     };
   }, [delay, direction, duration, eleRef, fixedTransform]);
 
-  return { tweenRef, restart, reverse };
+  return { ref: eleRef, restart, reverse };
 };
 
 export default useMoveTo;
