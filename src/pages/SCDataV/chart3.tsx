@@ -1,220 +1,119 @@
 import Chart from "@/components/chart";
-import { RadarChart } from "echarts/charts";
+import useRafInterval from "@/hooks/useRafInterval";
+import { BarChart } from "echarts/charts";
+import type { EChartsType } from "echarts/core";
+import { useRef } from "react";
 
-const data = [582, 421.2, 622.1, 625.3, 265, 224];
-const indicator = [
-  {
-    name: "套餐1",
-    max: 1000,
-  },
-  {
-    name: "套餐2",
-    max: 1000,
-  },
-  {
-    name: "套餐3",
-    max: 1000,
-  },
-  {
-    name: "套餐4",
-    max: 1000,
-  },
-  {
-    name: "套餐5",
-    max: 1000,
-  },
-  {
-    name: "套餐6",
-    max: 1000,
-  },
-];
+const data = [2000, 3000, 4000, 5000];
+const colors = ["#91AC9A", "#6E918C"];
+const xData = ["Q1", "Q2", "Q3", "Q4"];
+export default function Chart3() {
+  const chartRef = useRef<EChartsType>(null);
+  const tipIndex = useRef(0);
 
-export default function Chart1() {
+  useRafInterval(
+    () => {
+      if (chartRef.current) {
+        chartRef.current?.dispatchAction({
+          type: "showTip",
+          seriesIndex: 0,
+          dataIndex: tipIndex.current,
+        });
+        tipIndex.current = (tipIndex.current + 1) % data.length;
+      }
+    },
+    3_000,
+    true
+  );
+
   return (
     <Chart
-      use={[RadarChart]}
+      ref={chartRef}
+      use={[BarChart]}
       option={{
-        radar: {
-          center: ["50%", "50%"],
-          radius: "75%",
-          axisName: {
-            formatter: function (name: string) {
-              return ["{a|" + name + "}"].join("\n");
-            },
-            rich: {
-              //根据文字的组设置格式
-              a: {
-                color: "#BCDCFF",
-                fontSize: 14,
-                fontWeight: 600,
-                fontFamily: "Source Han Sans CN",
-              },
-              // b:{
-              //     fontSize:14,
-              //     verticalAlign:'top',
-              //     width:57,
-              //     color:'#8E88FE',
-              //     fontWeight:600,
-              //     align:'center'
-              // },
+        tooltip: {
+          trigger: "axis",
+          backgroundColor: "rgba(110,145,140,0.3)",
+          borderColor: colors[1],
+          borderWidth: 1,
+          borderRadius: 8,
+          textStyle: {
+            color: "#fff",
+            fontSize: 13,
+            align: "left",
+          },
+          axisPointer: {
+            type: "line",
+            lineStyle: {
+              width: 1,
+              type: "dotted",
+              color: "#618dd3",
             },
           },
-          axisNameGap: 0,
-          indicator: indicator,
-          splitLine: {
+        },
+        grid: {
+          top: "20%",
+          bottom: "5%",
+          left: 10,
+          right: 10,
+          outerBoundsMode: "same",
+        },
+        xAxis: {
+          type: "category",
+          axisLine: {
+            lineStyle: {
+              color: "rgba(255, 255, 255, 0.1)",
+            },
+          },
+          axisLabel: {
+            interval: 0,
+            color: "rgba(255, 255, 255, 0.6)",
+          },
+          axisTick: {
             show: false,
           },
-          splitArea: {
+          data: xData,
+        },
+        yAxis: {
+          type: "value",
+          splitLine: {
             show: false,
           },
           axisLine: {
             show: false,
           },
+          axisLabel: {
+            color: "rgba(255, 255, 255, 0.6)",
+          },
+          axisTick: {
+            show: false,
+          },
         },
         series: [
           {
-            // name: '',
-            type: "radar",
-            data: [data],
-            // value:14,
+            name: "",
+            type: "bar",
+            barWidth: 30,
             label: {
               show: true,
-              color: "#8E88FE",
-              // position:[-20,-10,-10,-10],
-              align: "right",
-              distance: 10,
-            },
-            symbolSize: [6, 6],
-            lineStyle: {
-              //边缘颜色
-              width: 0,
-            },
-            itemStyle: {
-              borderWidth: 1,
+              position: "top",
               color: "#fff",
-              borderColor: "#F2F063",
-            },
-            areaStyle: {
-              color: "#7D77F1",
-              opacity: 0.6,
-            },
-          },
-          {
-            type: "radar",
-            data: [[1000, 1000, 1000, 1000, 1000, 1000]],
-            symbol: "none",
-            lineStyle: {
-              width: 0,
             },
             itemStyle: {
-              color: "#4175F5",
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: colors.map((color, index) => ({
+                  offset: index,
+                  color: color,
+                })),
+                global: false,
+              },
             },
-
-            areaStyle: {
-              color: "#4175F5",
-              opacity: 0.06,
-            },
-          },
-          {
-            type: "radar",
-            data: [[900, 900, 900, 900, 900, 900]],
-
-            symbol: "none",
-            lineStyle: {
-              width: 0,
-            },
-            itemStyle: {
-              color: "#2C72C8",
-            },
-
-            areaStyle: {
-              color: "#2C72C8",
-              opacity: 0.12,
-            },
-          },
-          {
-            type: "radar",
-            data: [[800, 800, 800, 800, 800, 800]],
-
-            symbol: "none",
-            lineStyle: {
-              width: 0,
-            },
-            itemStyle: {
-              color: "#4175F5",
-            },
-
-            areaStyle: {
-              color: "#4175F5",
-              opacity: 0.18,
-            },
-          },
-          {
-            type: "radar",
-            data: [[700, 700, 700, 700, 700, 700]],
-
-            symbol: "none",
-            lineStyle: {
-              width: 0,
-            },
-            itemStyle: {
-              color: "#4175F5",
-            },
-
-            areaStyle: {
-              color: "#4175F5",
-              opacity: 0.19,
-            },
-          },
-          {
-            type: "radar",
-            data: [[600, 600, 600, 600, 600, 600]],
-
-            symbol: "none",
-            lineStyle: {
-              width: 0,
-            },
-            itemStyle: {
-              color: "#4175F5",
-            },
-
-            areaStyle: {
-              color: "#4175F5",
-              opacity: 0.17,
-            },
-          },
-          {
-            type: "radar",
-            data: [[500, 500, 500, 500, 500, 500]],
-            symbol: "none",
-            lineStyle: {
-              width: 0,
-            },
-            itemStyle: {
-              color: "#4175F5",
-            },
-
-            areaStyle: {
-              color: "#4175F5",
-              opacity: 0.16,
-            },
-          },
-          {
-            type: "radar",
-            data: [[400, 400, 400, 400, 400, 400]],
-
-            symbol: "none",
-            lineStyle: {
-              width: 0,
-            },
-            itemStyle: {
-              color: "#4175F5",
-            },
-
-            areaStyle: {
-              color: "#4175F5",
-              opacity: 0.13,
-            },
+            data: data,
           },
         ],
       }}

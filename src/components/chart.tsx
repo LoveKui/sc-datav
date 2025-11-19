@@ -32,18 +32,20 @@ const Chart: ForwardRefRenderFunction<echarts.EChartsType, ChartProps> = (
   ref
 ) => {
   const chartBox = useRef<HTMLDivElement>(null);
-  const chart = useRef<echarts.EChartsType>(null!);
+  const chart = useRef<echarts.EChartsType | null>(null);
   const size = useSize(chartBox);
 
   echarts.use(props.use);
 
-  useImperativeHandle(ref, () => chart.current, [chart]);
+  useImperativeHandle(ref, () => chart.current!);
 
   useEffect(() => {
     chart.current = echarts.init(chartBox.current as HTMLElement);
 
     return () => {
       chart.current?.dispose();
+      chart.current = null;
+      chartBox.current = null;
     };
   }, []);
 

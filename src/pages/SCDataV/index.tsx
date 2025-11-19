@@ -26,6 +26,12 @@ const CanvasWrapper = styled.div`
   }
 `;
 
+const LevaBox = styled.div`
+  .leva-c-kWgxhW-bCBHqk-fill-false {
+    right: 80px;
+  }
+`;
+
 const scale = new Float32Array(
   Array.from({ length: 50 }, () => 0.5 + Math.random() * 30)
 );
@@ -50,10 +56,12 @@ export default function SichuanMap() {
 
   return (
     <>
-      <Leva collapsed />
+      <LevaBox>
+        <Leva collapsed />
+      </LevaBox>
       <Wrapper id="datav">
         <CanvasWrapper>
-          <Canvas camera={{ fov: 60 }} dpr={[1, 2]}>
+          <Canvas camera={{ fov: 70 }} dpr={[1, 2]}>
             <color attach="background" args={[controls.GBackground]} />
             <Grid
               renderOrder={-1}

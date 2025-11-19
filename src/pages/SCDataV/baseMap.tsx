@@ -19,7 +19,6 @@ export default function BaseMap({ projection }: { projection: GeoProjection }) {
     })
   );
 
-  // 预计算所有投影点与全局包围盒
   const { citys, regions, bbox } = useMemo(() => {
     const citys: { name: string; center: THREE.Vector3 }[] = [];
     const regions: THREE.Vector2[][] = [];
@@ -27,10 +26,6 @@ export default function BaseMap({ projection }: { projection: GeoProjection }) {
 
     const toV2 = (coord: number[]) => {
       const [x = 0, y = 0] = projection(coord as [number, number]) ?? [];
-      //   if (x < bbox.min.x) bbox.min.x = x;
-      //   if (x > bbox.max.x) bbox.max.x = x;
-      //   if (y < bbox.min.y) bbox.min.y = y;
-      //   if (y > bbox.max.y) bbox.max.y = y;
       const projected = new THREE.Vector2(x, y);
       bbox.expandByPoint(projected);
       return projected;

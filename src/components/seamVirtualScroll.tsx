@@ -167,23 +167,23 @@ const Index: FC<SeamVirtualScroll<Record<string, React.ReactNode>>> = (
   const [isScroll, setIsScroll] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const [isScrollHeight, expendCount, _data] = useMemo(() => {
-    const _isScroll =
-      data.length * (rowHeight + 2) > warperHeight && warperHeight > 0;
-    const count = Math.ceil(warperHeight / (rowHeight + 2));
+  const [isScrollHeight, len, _data] = useMemo(() => {
+    const rowH = rowHeight + 2;
+    const _isScroll = data.length * rowH > warperHeight && warperHeight > 0;
+    const _len = Math.ceil(warperHeight / rowH);
 
     let list = data;
     if (_isScroll) {
-      list = list.concat(data.slice(0, count));
+      list = list.concat(data.slice(0, _len));
     }
-
-    return [_isScroll, count, list];
+    return [_isScroll, _len, list];
   }, [data, rowHeight, warperHeight]);
 
   const renderList = useMemo(() => {
-    const endIndex = activeIndex + expendCount;
-    return _data.slice(activeIndex, endIndex);
-  }, [activeIndex, expendCount, _data]);
+    contentRef.current?.style.setProperty("transform", "translate3d(0, 0, 0)");
+    contentRef.current?.style.setProperty("transition", "none");
+    return _data.slice(activeIndex, activeIndex + len);
+  }, [activeIndex, _data, len]);
 
   useAnimationFrame((timestamp: number) => {
     if (timestamp - lastTime.current >= speed) {
@@ -195,14 +195,11 @@ const Index: FC<SeamVirtualScroll<Record<string, React.ReactNode>>> = (
         "transition",
         `transform 300ms ease-in 0s`
       );
-
       lastTime.current = timestamp;
     }
   }, isScroll && isScrollHeight);
 
   const onTransitionEnd = () => {
-    contentRef.current?.style.setProperty("transform", "translate3d(0, 0, 0)");
-    contentRef.current?.style.setProperty("transition", "none");
     setActiveIndex((n) => (n + 1) % data.length);
   };
 
@@ -227,7 +224,7 @@ const Index: FC<SeamVirtualScroll<Record<string, React.ReactNode>>> = (
               column={column}
               data={item}
               rowHeight={rowHeight}
-              rowIndex={(idx + activeIndex) % expendCount}
+              rowIndex={(idx + activeIndex) % len}
             />
           ))}
         </TableContent>

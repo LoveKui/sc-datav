@@ -3,13 +3,13 @@ import { gsap } from "gsap";
 
 type Direction = "toBottom" | "toTop" | "toLeft" | "toRight";
 
-const useMoveTo = function (
+const useMoveTo = function <T = null>(
   direction: Direction,
   duration: number = 1,
   delay: number = 0,
   fixedTransform: string = ""
 ) {
-  const eleRef = useRef<HTMLDivElement>(null);
+  const eleRef = useRef<T>(null);
   const tweenRef = useRef<gsap.core.Tween | null>(null);
 
   const restart = (includeDelay = true) => {

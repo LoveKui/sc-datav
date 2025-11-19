@@ -7,16 +7,13 @@ import {
   VisualMapComponent,
 } from "echarts/components";
 
+const colors = ["#ACA891", "#6E918C"];
 const data = Array.from({ length: 50 }, (_, k) => [
   "2025-06-" + `${k}`.padStart(2, "0"),
-  Math.random() * 100,
+  Math.round(Math.random() * 1000),
 ]);
-const dateList = data.map(function (item) {
-  return item[0];
-});
-const valueList = data.map(function (item) {
-  return item[1];
-});
+const dateList = data.map((item) => item[0]);
+const valueList = data.map((item) => item[1]);
 
 export default function Chart1() {
   return (
@@ -36,6 +33,7 @@ export default function Chart1() {
             seriesIndex: 0,
             min: 0,
             max: 400,
+            color: colors,
           },
           {
             show: false,
@@ -43,24 +41,27 @@ export default function Chart1() {
             seriesIndex: 1,
             dimension: 0,
             min: 0,
+            color: colors,
             max: dateList.length - 1,
           },
         ],
         title: [
           {
             left: "center",
-            text: "Gradient along the y axis",
+            text: "全省",
             textStyle: { color: "rgba(255, 255, 255, 0.6)" },
           },
           {
             top: "50%",
             left: "center",
-            text: "Gradient along the x axis",
+            text: "成都市",
             textStyle: { color: "rgba(255, 255, 255, 0.6)" },
           },
         ],
         tooltip: {
           trigger: "axis",
+          backgroundColor: "rgba(110,145,140,0.3)",
+          borderColor: colors[1],
         },
         xAxis: [
           {
