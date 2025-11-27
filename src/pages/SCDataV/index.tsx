@@ -1,8 +1,6 @@
-import { useLayoutEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { Grid, OrbitControls, Stars } from "@react-three/drei";
 import styled from "styled-components";
-import autofit from "autofit.js";
 import { folder, Leva, useControls } from "leva";
 import { AmbientLight, PointLight } from "./lights";
 import Content from "./content";
@@ -19,11 +17,6 @@ const CanvasWrapper = styled.div`
   inset: 0;
   width: 100%;
   height: 100%;
-
-  canvas {
-    width: 100% !important;
-    height: 100% !important;
-  }
 `;
 
 const LevaBox = styled.div`
@@ -42,29 +35,22 @@ export default function SichuanMap() {
     GBackground: { label: "背景颜色", value: "#26282a" },
   });
 
-  useLayoutEffect(() => {
-    autofit.init({ el: "#datav" });
-
-    return () => {
-      autofit.off();
-    };
-  }, []);
-
   return (
     <>
       <LevaBox>
         <Leva collapsed />
       </LevaBox>
-      <Wrapper id="datav">
+
+      <Wrapper>
         <CanvasWrapper>
           <Canvas camera={{ fov: 70 }} dpr={[1, 2]}>
             <color attach="background" args={[controls.GBackground]} />
             <Grid
-              renderOrder={-1}
               infiniteGrid={controls.infiniteGrid}
-              cellSize={0.6}
+              scale={2}
+              cellSize={0.3}
               cellThickness={0.6}
-              sectionSize={3.3}
+              sectionSize={1.5}
               sectionThickness={1.5}
               sectionColor={controls.sectionColor}
               cellColor={controls.cellColor}
@@ -73,26 +59,26 @@ export default function SichuanMap() {
             <AmbientLight />
             <PointLight />
             <Stars
+              fade
+              count={5000}
               radius={100}
               depth={50}
-              count={5000}
-              factor={4}
+              factor={8}
               saturation={0}
-              fade
-              speed={1}
+              speed={2}
             />
             <SCMap />
             <OrbitControls
               enablePan
               enableZoom
               enableRotate
-              target={[0, 0, 0]}
               minDistance={10}
               maxDistance={20}
               maxPolarAngle={1.5}
             />
           </Canvas>
         </CanvasWrapper>
+
         <Content />
       </Wrapper>
     </>

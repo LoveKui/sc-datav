@@ -1,6 +1,9 @@
-import { useControls } from "leva";
+import { useEffect, useLayoutEffect } from "react";
 import styled from "styled-components";
+import autofit from "autofit.js";
+import { useMapStyleStore } from "@/stores";
 import useMoveTo from "@/hooks/useMoveTo";
+import Button from "@/components/button";
 import Chart1 from "./chart1";
 import Chart2 from "./chart2";
 import Chart3 from "./chart3";
@@ -86,6 +89,15 @@ const CardTitle = styled.div`
   padding: 8px 16px;
 `;
 
+const BottomBox = styled.div`
+  position: absolute;
+  pointer-events: auto;
+  bottom: 20px;
+  left: 50%;
+  display: flex;
+  gap: 20px;
+`;
+
 const Github = styled.a.attrs({
   children: (
     <svg width="1em" height="1em" viewBox="0 0 22 22" version="1.1">
@@ -106,24 +118,37 @@ const Github = styled.a.attrs({
 `;
 
 export default function Content() {
-  // 显示主面板
   const topBox = useMoveTo("toBottom", 0.6, 1);
   const leftBox = useMoveTo("toRight", 0.8, 1.5);
   const leftBox1 = useMoveTo("toRight", 0.8, 1.5);
   const rightBox = useMoveTo("toLeft", 0.8, 1.5);
   const rightBox1 = useMoveTo("toLeft", 0.8, 1.5);
+  const bottomBox = useMoveTo("toTop", 0.8, 1.5, "translateX(-50%)");
 
-  useControls({
-    showMain: {
-      label: "显示内容面板",
-      value: true,
-      onChange: (v: boolean, _, context) => {
-        if (v) {
-          topBox.restart(context.initial);
-          leftBox.restart(context.initial);
-          leftBox1.restart(context.initial);
-          rightBox.restart(context.initial);
-          rightBox1.restart(context.initial);
+  const togglePureMode = useMapStyleStore((s) => s.togglePureMode);
+  const toggleMapStyle = useMapStyleStore((s) => s.toggleMapStyle);
+
+  useLayoutEffect(() => {
+    autofit.init({ el: "#datav" });
+
+    return () => {
+      autofit.off();
+    };
+  }, []);
+
+  useEffect(() => {
+    let initial = true;
+    bottomBox.restart(initial);
+
+    const unSub = useMapStyleStore.subscribe(
+      (s) => s.pureMode,
+      (v) => {
+        if (!v) {
+          topBox.restart(initial);
+          leftBox.restart(initial);
+          leftBox1.restart(initial);
+          rightBox.restart(initial);
+          rightBox1.restart(initial);
         } else {
           topBox.reverse();
           leftBox.reverse();
@@ -132,11 +157,19 @@ export default function Content() {
           rightBox1.reverse();
         }
       },
-    },
-  });
+      { fireImmediately: true }
+    );
+
+    initial = false;
+
+    return () => {
+      initial = true;
+      unSub();
+    };
+  }, []);
 
   return (
-    <Wrapper>
+    <Wrapper id="datav">
       <TitleWrapper ref={topBox.ref}>
         <Title>经济运行监测</Title>
         <Github href="https://github.com/knight-L/datav" target="_blank" />
@@ -158,6 +191,11 @@ export default function Content() {
           <CardTitle style={{ textAlign: "right" }}>进出口商品信息</CardTitle>
           <Chart4 />
         </Card>
+
+        <BottomBox ref={bottomBox.ref}>
+          <Button onClick={toggleMapStyle}>切换样式</Button>
+          <Button onClick={togglePureMode}>纯净模式</Button>
+        </BottomBox>
       </GridWrapper>
     </Wrapper>
   );

@@ -1,5 +1,6 @@
 import { useLayoutEffect, useMemo } from "react";
 import { useThree } from "@react-three/fiber";
+import { Center } from "@react-three/drei";
 import { geoMercator } from "d3-geo";
 import { gsap } from "gsap";
 import type { CityGeoJSON } from "@/pages/SCDataV/map";
@@ -17,15 +18,14 @@ export default function SCMap() {
   const projection = useMemo(() => {
     return geoMercator()
       .center(data.features[0].properties.centroid)
-      .scale(80)
-      .translate([1.5, 0]);
+      .translate([0, 0]);
   }, []);
 
   useLayoutEffect(() => {
     const tween = gsap.fromTo(
       camera.position,
-      { x: -5, y: 5, z: 15 },
-      { duration: 1.5, x: 0, y: 8, z: 10, ease: "sine.inOut" }
+      { x: -50, y: 50, z: 150 },
+      { x: 0, y: 80, z: 100, duration: 1.5, ease: "sine.inOut" }
     );
 
     return () => {
@@ -34,11 +34,13 @@ export default function SCMap() {
   }, [camera]);
 
   return (
-    <group rotation={[-Math.PI / 2, 0, 0]}>
-      <BaseMap projection={projection} />
+    <Center top>
+      <group rotation={[-Math.PI / 2, 0, 0]} scale={0.8}>
+        <BaseMap projection={projection} />
 
-      <OutLine projection={projection} />
-      <FlyLine projection={projection} />
-    </group>
+        <OutLine projection={projection} />
+        <FlyLine projection={projection} />
+      </group>
+    </Center>
   );
 }
