@@ -24,7 +24,7 @@
 - **数据可视化**: ECharts
 - **地理数据处理**: D3-geo + topojson-client
 - **动画库**: GSAP
-- **UI 库**: Styled-components
+- **样式库**: Styled-components
 - **调试工具**: Leva
 - **自适应布局**: autofit.js
 
@@ -32,7 +32,7 @@
 
 ```
 src/
-├── assets/              # 静态资源文件
+├── assets/             # 静态资源文件
 │   ├── sc.json         # 四川省地理数据
 │   └── sc_outline.json # 四川省轮廓数据
 ├── components/         # 通用组件
