@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import styled from "styled-components";
-import { useMapStyleStore } from "@/stores";
+import { useMapStyleStore } from "./stores";
 import useMoveTo from "@/hooks/useMoveTo";
 import AutoFit from "@/components/autoFit";
 import Button from "@/components/button";
