@@ -1,6 +1,8 @@
+import { lazy } from "react";
 import { Route, Routes } from "react-router";
-import SCDataV from "./pages/SCDataV";
-import Demo1 from "./pages/Demo1";
+
+const SCDataV = lazy(() => import("./pages/SCDataV"));
+const Demo1 = lazy(() => import("./pages/Demo1"));
 
 function App() {
   return (
