@@ -78,7 +78,6 @@ const BodyRowItem = styled.div<{
   flex: 1;
   min-height: 0;
   min-width: 0;
-  display: flex;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -91,7 +90,18 @@ const BodyRowItem = styled.div<{
 `;
 
 const ScrollItem = styled.span`
+  display: flex;
+  width: max-content;
   animation: marquee 3s linear infinite both alternate;
+
+  @keyframes marquee {
+    form {
+      transform: translateX(0px);
+    }
+    to {
+      transform: translateX(min(100cqw - 100%, 0px));
+    }
+  }
 `;
 
 const Empty = styled.div.attrs({ children: "暂无数据" })`
@@ -110,6 +120,7 @@ export interface HeaderProps {
     dataIndex?: string;
     align?: "center" | "left" | "right";
     flex?: number;
+    noScroll?: boolean;
     render?: (index: number) => React.ReactNode;
   }[];
   style?: React.CSSProperties;
@@ -152,9 +163,13 @@ const BodyRow: FC<BodyRowProps<Record<string, React.ReactNode>>> = (props) => {
     <BodyRowWrapper $height={rowHeight}>
       {column.map((el, idx) => (
         <BodyRowItem $align={el.align} $flex={el.flex} key={idx}>
-          <ScrollItem>
-            {el.render?.(rowIndex) ?? data?.[el.dataIndex ?? 0]}
-          </ScrollItem>
+          {el.noScroll ? (
+            el.render?.(rowIndex) ?? data?.[el.dataIndex ?? 0]
+          ) : (
+            <ScrollItem>
+              {el.render?.(rowIndex) ?? data?.[el.dataIndex ?? 0]}
+            </ScrollItem>
+          )}
         </BodyRowItem>
       ))}
     </BodyRowWrapper>
