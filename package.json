@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",
-    "@react-three/fiber": "^9.4.0",
+    "@react-three/fiber": "^9.4.2",
     "@react-three/postprocessing": "^3.0.4",
     "autofit.js": "^3.2.8",
     "d3-geo": "^3.1.1",
@@ -22,7 +22,7 @@
     "react-dom": "^19.1.1",
     "react-router": "^7.9.6",
     "styled-components": "^6.1.19",
-    "three": "^0.181.1",
+    "three": "^0.181.2",
     "topojson-client": "^3.1.0",
     "zustand": "^5.0.8"
   },

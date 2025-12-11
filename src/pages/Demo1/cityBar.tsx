@@ -1,6 +1,5 @@
-import { useMemo, useRef } from "react";
+import { use, useMemo, useRef } from "react";
 import { useFrame, type ThreeElements } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
 import {
   AdditiveBlending,
   Color,
@@ -9,6 +8,7 @@ import {
   SRGBColorSpace,
   type Mesh,
 } from "three";
+import loadTexture from "./helpers/loadTexture";
 
 import guangquan01 from "@/assets/guangquan01.png";
 import huiguang from "@/assets/huiguang.png";
@@ -18,6 +18,13 @@ export interface CityBarProps {
   value?: number;
   children?: React.ReactNode | ((barHeight: number) => React.ReactNode);
 }
+const textures = Promise.all([
+  loadTexture(guangquan01),
+  loadTexture(huiguang, (tex) => {
+    tex.colorSpace = SRGBColorSpace;
+    tex.wrapS = tex.wrapT = RepeatWrapping;
+  }),
+]);
 
 export default function CityBar(props: CityBarProps) {
   const {
@@ -35,11 +42,7 @@ export default function CityBar(props: CityBarProps) {
   const dir = "y";
 
   const quanRef = useRef<Mesh>(null!);
-  const texture1 = useTexture(guangquan01);
-  const texture2 = useTexture(huiguang, (tex) => {
-    tex.colorSpace = SRGBColorSpace;
-    tex.wrapS = tex.wrapT = RepeatWrapping;
-  });
+  const [texture1, texture2] = use(textures);
 
   const barHeight = useMemo(() => {
     return height * (value / max);
