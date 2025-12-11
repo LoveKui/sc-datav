@@ -1,6 +1,5 @@
-import { useRef } from "react";
+import { use, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useTexture } from "@react-three/drei";
 import {
   Color,
   Mesh,
@@ -8,12 +7,31 @@ import {
   RepeatWrapping,
   SRGBColorSpace,
 } from "three";
+import loadTexture from "./helpers/loadTexture";
 
 import rotationBorder1 from "@/assets/rotationBorder1.png";
 import rotationBorder2 from "@/assets/rotationBorder2.png";
 import gaoguang1 from "@/assets/gaoguang1.png";
-import grid from "@/assets/grid.png";
 import gridBlack from "@/assets/gridBlack.png";
+import grid from "@/assets/grid.png";
+
+const textures = Promise.all([
+  loadTexture(gaoguang1, (tex) => {
+    tex.colorSpace = SRGBColorSpace;
+    tex.wrapS = tex.wrapT = RepeatWrapping;
+    tex.repeat.set(1, 1);
+  }),
+  loadTexture(grid, (tex) => {
+    tex.wrapS = tex.wrapT = RepeatWrapping;
+    tex.repeat.set(80, 80);
+  }),
+  loadTexture(gridBlack, (tex) => {
+    tex.wrapS = tex.wrapT = RepeatWrapping;
+    tex.repeat.set(80, 80);
+  }),
+  loadTexture(rotationBorder1),
+  loadTexture(rotationBorder2),
+]);
 
 export default function Bottom() {
   const meshRef0 = useRef({
@@ -35,23 +53,26 @@ export default function Bottom() {
   });
   const meshRef1 = useRef<Mesh>(null!);
   const meshRef2 = useRef<Mesh>(null!);
-  const gaoGuang1Tex = useTexture(gaoguang1, (tex) => {
-    tex.colorSpace = SRGBColorSpace;
-    tex.wrapS = tex.wrapT = RepeatWrapping;
-    tex.repeat.set(1, 1);
-  });
 
-  const [gridTex, gridBlackTex] = useTexture([grid, gridBlack], (tex) =>
-    tex.forEach((el) => {
-      el.wrapS = el.wrapT = RepeatWrapping;
-      el.repeat.set(80, 80);
-    })
-  );
+  const [
+    gaoGuang1Tex,
+    gridTex,
+    gridBlackTex,
+    rotationBorder1Tex,
+    rotationBorder2Tex,
+  ] = use(textures);
 
-  const [rotationBorder1Tex, rotationBorder2Tex] = useTexture([
-    rotationBorder1,
-    rotationBorder2,
-  ]);
+  //   const [gridTex, gridBlackTex] = useTexture([grid, gridBlack], (tex) =>
+  //     tex.forEach((el) => {
+  //       el.wrapS = el.wrapT = RepeatWrapping;
+  //       el.repeat.set(80, 80);
+  //     })
+  //   );
+
+  //   const [rotationBorder1Tex, rotationBorder2Tex] = useTexture([
+  //     rotationBorder1,
+  //     rotationBorder2,
+  //   ]);
 
   useFrame((_state, delta) => {
     meshRef0.current.uTime.value += delta;

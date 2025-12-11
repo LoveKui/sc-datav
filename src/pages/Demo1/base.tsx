@@ -1,6 +1,6 @@
-import { useLayoutEffect, useMemo, useRef } from "react";
+import { use, useLayoutEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
-import { Center, useTexture } from "@react-three/drei";
+import { Center } from "@react-three/drei";
 import { gsap } from "gsap";
 import {
   Box2,
@@ -11,8 +11,9 @@ import {
   type Group,
 } from "three";
 import { geoMercator } from "d3-geo";
-import type { CityGeoJSON } from "@/pages/SCDataV/map";
+import type { CityGeoJSON } from "@/types/map";
 import City, { type CityProps } from "./city";
+import loadTexture from "./helpers/loadTexture";
 
 import map from "@/assets/sc_map.png";
 import normalMap from "@/assets/sc_normal_map.png";
@@ -23,16 +24,21 @@ export interface BaseProps {
   outlineData?: CityGeoJSON;
 }
 
+const textures = Promise.all([
+  loadTexture(map, (tex) => {
+    tex.wrapS = tex.wrapT = RepeatWrapping;
+  }),
+  loadTexture(normalMap, (tex) => {
+    tex.wrapS = tex.wrapT = RepeatWrapping;
+  }),
+]);
+
 export default function Base(props: BaseProps) {
   const { data, depth = 1 } = props;
   const groupRef = useRef<Group>(null!);
   const camera = useThree((state) => state.camera);
 
-  const [texture1, texture2] = useTexture([map, normalMap], (tex) =>
-    tex.forEach((el) => {
-      el.wrapS = el.wrapT = RepeatWrapping;
-    })
-  );
+  const [texture1, texture2] = use(textures);
 
   const projection = useMemo(() => {
     return geoMercator()

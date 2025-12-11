@@ -1,18 +1,10 @@
 import styled from "styled-components";
 import { OrbitControls, ContactShadows } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
-import type { CityGeoJSON } from "@/pages/SCDataV/map";
 import Content from "./content";
 import Lights from "./lights";
-import Base from "./base";
 
-import scMapData from "@/assets/sc.json";
-import scOutlineData from "@/assets/sc_outline.json";
-import Sky from "./sky";
-import Bottom from "./bottom";
-
-const mapData = scMapData as CityGeoJSON,
-  outlineData = scOutlineData as CityGeoJSON;
+import Scene from "./scene";
 
 const Wrapper = styled.div`
   position: relative;
@@ -27,7 +19,7 @@ const CanvasWrapper = styled.div`
   height: 100%;
 `;
 
-export default function Map() {
+export default function Index() {
   return (
     <Wrapper>
       <CanvasWrapper>
@@ -38,11 +30,8 @@ export default function Map() {
           dpr={[1, 2]}>
           <color attach="background" args={["#fff5e8"]} />
           <Lights />
-          <Sky />
 
-          <Base data={mapData} outlineData={outlineData} />
-
-          <Bottom />
+          <Scene />
 
           <ContactShadows
             opacity={0.2}
