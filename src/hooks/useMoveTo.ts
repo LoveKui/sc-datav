@@ -45,6 +45,8 @@ const useMoveTo = function <T = null>(
       );
     }
 
+    tweenRef.current?.pause();
+
     return () => {
       tweenRef.current?.kill();
     };

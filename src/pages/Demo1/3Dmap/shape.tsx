@@ -1,5 +1,10 @@
 import { useImperativeHandle, useLayoutEffect, useRef, type Ref } from "react";
-import { Box2, Float32BufferAttribute, Mesh, ShapeGeometry } from "three";
+import {
+  Float32BufferAttribute,
+  type Box2,
+  type Mesh,
+  type ShapeGeometry,
+} from "three";
 import type { Args } from "@react-three/fiber";
 
 export type ShapeProps = Omit<React.JSX.IntrinsicElements["mesh"], "args"> & {
@@ -13,6 +18,7 @@ function Shape(props: ShapeProps) {
   const meshRef = useRef<Mesh>(null!);
 
   useImperativeHandle(ref, () => meshRef.current);
+
   useLayoutEffect(() => {
     const { geometry } = meshRef.current;
     const pos = geometry.attributes.position;

@@ -25,7 +25,8 @@ import {
   useFrame,
   type ThreeElements,
 } from "@react-three/fiber";
-import loadTexture from "./helpers/loadTexture";
+import { useConfigStore } from "../stores";
+import loadTexture from "../helpers/loadTexture";
 
 import cloudUrl from "@/assets/cloud.png";
 
@@ -226,7 +227,7 @@ export const Clouds = ({
         <instancedMesh
           matrixAutoUpdate={false}
           ref={instance}
-          args={[null as any, null as any, limit]}
+          args={[undefined, undefined, limit]}
           frustumCulled={frustumCulled}>
           <instancedBufferAttribute
             usage={DynamicDrawUsage}
@@ -403,6 +404,7 @@ export const Cloud = (props: CloudProps) => {
 export default function CloudGroup() {
   const ref = useRef<Group>(null!);
   const cloud0 = useRef<Group>(null!);
+  const cloud = useConfigStore((s) => s.cloud);
 
   useFrame((state, delta) => {
     ref.current.rotation.y = Math.cos(state.clock.elapsedTime / 2) / 2;
@@ -411,9 +413,22 @@ export default function CloudGroup() {
   });
 
   return (
-    <Clouds ref={ref}>
-      <Cloud ref={cloud0} position={[5, 5, 0]} volume={1} opacity={0.5} />
-      <Cloud position={[-5, 5, 5]} volume={0.5} opacity={0.5} />
+    <Clouds ref={ref} visible={cloud}>
+      <Cloud
+        ref={cloud0}
+        bounds={[50, 10, 10]}
+        position={[100, 60, 20]}
+        volume={50}
+        opacity={0.5}
+        fade={50}
+      />
+      <Cloud
+        bounds={[50, 10, 10]}
+        position={[-60, 60, 60]}
+        volume={50}
+        opacity={0.5}
+        fade={50}
+      />
     </Clouds>
   );
 }

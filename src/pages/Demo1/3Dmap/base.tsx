@@ -1,6 +1,5 @@
 import { use, useLayoutEffect, useMemo, useRef } from "react";
 import { useThree } from "@react-three/fiber";
-import { Center } from "@react-three/drei";
 import { gsap } from "gsap";
 import {
   Box2,
@@ -13,10 +12,11 @@ import {
 import { geoMercator } from "d3-geo";
 import type { CityGeoJSON } from "@/types/map";
 import City, { type CityProps } from "./city";
-import loadTexture from "./helpers/loadTexture";
+import loadTexture from "../helpers/loadTexture";
 
 import map from "@/assets/sc_map.png";
 import normalMap from "@/assets/sc_normal_map.png";
+import Heatmap from "./heatmap";
 
 export interface BaseProps {
   depth?: number;
@@ -34,7 +34,7 @@ const textures = Promise.all([
 ]);
 
 export default function Base(props: BaseProps) {
-  const { data, depth = 1 } = props;
+  const { data, depth = 6 } = props;
   const groupRef = useRef<Group>(null!);
   const camera = useThree((state) => state.camera);
 
@@ -43,6 +43,7 @@ export default function Base(props: BaseProps) {
   const projection = useMemo(() => {
     return geoMercator()
       .center(data.features[0].properties.centroid)
+      .scale(1000)
       .translate([0, 0]);
   }, [data]);
 
@@ -72,7 +73,7 @@ export default function Base(props: BaseProps) {
 
       regions.push({
         city: feature.properties.name,
-        cityId: [x, -y, 1.1],
+        cityId: [x, -y, depth + 0.1],
         points,
       });
     });
@@ -81,7 +82,7 @@ export default function Base(props: BaseProps) {
       regions,
       bbox,
     };
-  }, [projection, data]);
+  }, [projection, data, depth]);
 
   useLayoutEffect(() => {
     if (!groupRef.current) return;
@@ -91,9 +92,9 @@ export default function Base(props: BaseProps) {
 
     tl.add(
       gsap.to(camera.position, {
-        x: 5,
-        y: 10,
-        z: 10,
+        x: 60,
+        y: 125,
+        z: 160,
         duration: 2.5,
         ease: "circ.out",
       })
@@ -101,7 +102,7 @@ export default function Base(props: BaseProps) {
     tl.add(
       tl.to(
         groupRef.current.scale,
-        { x: 0.5, y: 0.5, z: 0.5, duration: 1, ease: "circ.out" },
+        { x: 1, y: 1, z: 1, duration: 1, ease: "circ.out" },
         2.5
       )
     );
@@ -126,23 +127,26 @@ export default function Base(props: BaseProps) {
   }, [camera]);
 
   return (
-    <Center top>
-      <group
-        ref={groupRef}
-        rotation={[-Math.PI / 2, 0, 0]}
-        scale={[0.5, 0.5, 0.01]}
-        position={[0, 0, 0]}>
-        {regions.map((region, idx) => (
-          <City
-            key={idx}
-            depth={depth}
-            bbox={bbox}
-            data={region}
-            map={texture1}
-            normalMap={texture2}
-          />
-        ))}
-      </group>
-    </Center>
+    <group
+      ref={groupRef}
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale-z={0.01}
+      position-x={20}>
+      {regions.map((region, idx) => (
+        <City
+          key={idx}
+          depth={depth}
+          bbox={bbox}
+          data={region}
+          map={texture1}
+          normalMap={texture2}
+        />
+      ))}
+      <Heatmap
+        renderOrder={11}
+        projection={projection}
+        position-z={depth + 1}
+      />
+    </group>
   );
 }

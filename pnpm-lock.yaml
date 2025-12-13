@@ -32,6 +32,9 @@ importers:
       gsap:
         specifier: ^3.13.0
         version: 3.13.0
+      keli-heatmap.js:
+        specifier: ^2.0.18
+        version: 2.0.18
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.2.2(@types/react@19.2.2))(@types/react@19.2.2)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
@@ -1259,6 +1262,9 @@ packages:
     resolution: {integrity: sha512-XmOWe7eyHYH14cLdVPoyg+GOH3rYX++KpzrylJwSW98t3Nk+U8XOl8FWKOgwtzdb8lXGf6zYwDUzeHMWfxasyg==}
     engines: {node: '>=6'}
     hasBin: true
+
+  keli-heatmap.js@2.0.18:
+    resolution: {integrity: sha512-MVhLSVcKK4CEV24ogeWX+cvRfi09xz0TL5dtpDQW9r9lxF2DBTLyyPyUbTx7wDIhY/mK9ryHTxybI1kPyrVpPg==}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -2987,6 +2993,8 @@ snapshots:
   json-stable-stringify-without-jsonify@1.0.1: {}
 
   json5@2.2.3: {}
+
+  keli-heatmap.js@2.0.18: {}
 
   keyv@4.5.4:
     dependencies:

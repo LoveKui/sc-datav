@@ -46,6 +46,7 @@ const StatisticsNumber = styled(NumberAnimation)`
 const Statistics1 = styled.div`
   display: flex;
   align-items: center;
+  color: rgba(0, 0, 0, 0.8);
 `;
 
 const Statistics1Number = styled(NumberAnimation)`

@@ -1,5 +1,4 @@
-import { useMemo, useRef, useState } from "react";
-import { useCursor } from "@react-three/drei";
+import { useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import {
   DoubleSide,
@@ -12,11 +11,11 @@ import {
   type Vector2,
 } from "three";
 import ShapeMesh from "./shape";
-import CityTooltip from "./cityTooltip";
-import CityBar from "./cityBar";
+import Tooltip from "./tooltip";
+import Bar from "./bar";
 import Label from "./label";
 
-import cityData from "./cityData";
+import cityData from "../cityData";
 
 export interface CityProps
   extends Pick<MeshStandardMaterialProperties, "map" | "normalMap"> {
@@ -32,35 +31,37 @@ export interface CityProps
 export default function City(props: CityProps) {
   const { data, bbox, depth, map, normalMap } = props;
   const groupRef = useRef<Group>(null!);
+  const tooltipRef = useRef<{ open: () => void; close: () => void }>(null!);
   const vector3 = useRef(new Vector3(1, 1, 1));
 
-  const [hovered, setHovered] = useState(false);
-
-  const shape = useMemo(
-    () => data.points.map((e) => new Shape(e)),
-    [data.points]
-  );
+  const [shape, shapeGeometry] = useMemo(() => {
+    const shapes = data.points.map((e) => new Shape(e));
+    const shapeGeometry = new ShapeGeometry(shapes);
+    return [shapes, shapeGeometry];
+  }, [data.points]);
 
   useFrame(() => {
-    groupRef.current.scale.lerp(vector3.current.setZ(hovered ? 1.5 : 1), 0.1);
+    groupRef.current.scale.lerp(vector3.current, 0.1);
   });
-
-  useCursor(hovered);
 
   return (
     <group
       ref={groupRef}
-      onPointerOver={(e) => (e.stopPropagation(), setHovered(true))}
-      onPointerOut={() => setHovered(false)}>
-      <ShapeMesh
-        castShadow
-        receiveShadow
-        bbox={bbox}
-        args={[shape]}
-        position={[0, 0, depth + 0.01]}>
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        vector3.current.setZ(1.5);
+        tooltipRef.current.open();
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={() => {
+        vector3.current.setZ(1);
+        tooltipRef.current.close();
+        document.body.style.cursor = "auto";
+      }}>
+      <ShapeMesh position-z={depth + 0.1} bbox={bbox} args={[shape]}>
         <meshStandardMaterial map={map} normalMap={normalMap} />
       </ShapeMesh>
-      <mesh>
+      <mesh castShadow receiveShadow>
         <extrudeGeometry
           args={[shape, { depth, steps: 1, bevelEnabled: false }]}
         />
@@ -73,12 +74,12 @@ export default function City(props: CityProps) {
           color="#f9f3e7"
         />
       </mesh>
-      <lineSegments position={[0, 0.01, depth + 0.02]} raycast={() => null}>
-        <edgesGeometry args={[new ShapeGeometry(shape)]} />
+      <lineSegments position-z={depth + 0.2} raycast={() => null}>
+        <edgesGeometry args={[shapeGeometry]} />
         <lineBasicMaterial transparent opacity={0} color="#ffffff" />
       </lineSegments>
 
-      <CityBar
+      <Bar
         position={data.cityId}
         value={cityData[data.city as keyof typeof cityData]?.population ?? 0}>
         {(barHeight) => (
@@ -86,21 +87,22 @@ export default function City(props: CityProps) {
             <Label
               center
               position={[0, 0, barHeight + 0.2]}
-              distanceFactor={10}
+              distanceFactor={100}
               zIndexRange={[100 - 1000]}>
               {data.city}
             </Label>
-            <CityTooltip
+            <Tooltip
+              ref={tooltipRef}
               data={{
                 city: data.city,
                 ...cityData[data.city as keyof typeof cityData],
               }}
-              position={[0, 0, barHeight + 2]}
-              visible={hovered}
+              position={[0, 0, barHeight + 7]}
+              visible={false}
             />
           </>
         )}
-      </CityBar>
+      </Bar>
     </group>
   );
 }

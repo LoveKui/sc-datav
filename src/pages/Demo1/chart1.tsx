@@ -100,7 +100,7 @@ export default function Chart1() {
             },
             label: {
               show: true,
-              color: "#000000",
+              color: "rgba(0, 0, 0,0.8)",
               valueAnimation: true,
               fontSize: 16,
               fontWeight: "bold",
