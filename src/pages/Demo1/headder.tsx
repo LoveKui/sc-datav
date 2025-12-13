@@ -5,10 +5,6 @@ const TitleWrapper = styled.div`
   position: relative;
   width: 100%;
   height: 80px;
-  /* background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 -2 1920 84'><path d='M0,0 L1920,0 L1920,60 L1300,60 L1250,80 L670,80 L620,60 L0,60 Z' fill='rgb(255, 245, 232)'/><path d='M0,60L620,60L670,80L1250,80L1300,60L1920,60' fill='none' stroke='rgb(234, 88, 12)' strokeWidth='1'/></svg>"); */
-  background-repeat: no-repeat;
-  background-size: 100%;
-  background-position: bottom;
   display: flex;
   justify-content: center;
   align-items: center;

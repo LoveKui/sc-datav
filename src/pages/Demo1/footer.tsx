@@ -84,11 +84,49 @@ const Button = styled.button<{ $active?: boolean }>`
     `}
 `;
 
+const Bg = () => (
+  <svg
+    viewBox="0 0 1920 100"
+    preserveAspectRatio="none"
+    width="100%"
+    height="100%">
+    <defs>
+      <linearGradient id="grad-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#fff5e8" stopOpacity="0.5" />
+        <stop offset="100%" stopColor="#fff5e8" stopOpacity="1" />
+      </linearGradient>
+
+      <path id="pulse-path" d="M960,100 Q960,40 1300,40" />
+      <path id="pulse-path-left" d="M960,100 Q960,40 620,40" />
+    </defs>
+
+    <path
+      d="M0,100 H1920 V100 Q1600,100 1450,100 Q1300,80 1200,60 Q960,10 720,60 Q620,80 470,100 Q320,100 0,100 Z"
+      fill="url(#grad-bottom)"
+      stroke="none"></path>
+
+    <path
+      d="M0,100 Q320,100 470,100 Q620,80 720,60 Q960,10 1200,60 Q1300,80 1450,100 Q1600,100 1920,100"
+      fill="none"
+      stroke="#ff6715"
+      strokeWidth="1"
+      strokeOpacity="0.4"></path>
+
+    <path
+      d="M720,60 Q960,10 1200,60"
+      fill="none"
+      stroke="#ff6715"
+      strokeWidth="2"
+      strokeLinecap="round"></path>
+  </svg>
+);
+
 export default function Footer(props: ComponentProps<typeof Wrapper>) {
   const { cloud, rotation, mode, heat, bar, toggle } = useConfigStore();
 
   return (
     <Wrapper {...props}>
+      <Bg />
       <Buttons>
         <Button $active={cloud} onClick={() => toggle("cloud")}>
           <svg
@@ -137,41 +175,6 @@ export default function Footer(props: ComponentProps<typeof Wrapper>) {
           </svg>
         </Button>
       </Buttons>
-
-      <svg
-        viewBox="0 0 1920 100"
-        preserveAspectRatio="none"
-        width="100%"
-        height="100%">
-        <defs>
-          <linearGradient id="grad-bottom" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor="#fff5e8" stopOpacity="0.5" />
-            <stop offset="100%" stopColor="#fff5e8" stopOpacity="1" />
-          </linearGradient>
-
-          <path id="pulse-path" d="M960,100 Q960,40 1300,40" />
-          <path id="pulse-path-left" d="M960,100 Q960,40 620,40" />
-        </defs>
-
-        <path
-          d="M0,100 H1920 V100 Q1600,100 1450,100 Q1300,80 1200,60 Q960,10 720,60 Q620,80 470,100 Q320,100 0,100 Z"
-          fill="url(#grad-bottom)"
-          stroke="none"></path>
-
-        <path
-          d="M0,100 Q320,100 470,100 Q620,80 720,60 Q960,10 1200,60 Q1300,80 1450,100 Q1600,100 1920,100"
-          fill="none"
-          stroke="#ff6715"
-          strokeWidth="1"
-          strokeOpacity="0.4"></path>
-
-        <path
-          d="M720,60 Q960,10 1200,60"
-          fill="none"
-          stroke="#ff6715"
-          strokeWidth="2"
-          strokeLinecap="round"></path>
-      </svg>
     </Wrapper>
   );
 }
