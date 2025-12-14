@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
 
 export interface NumberAnimationProps {
@@ -12,27 +12,46 @@ export interface NumberAnimationProps {
 
 export default function NumberAnimation(props: NumberAnimationProps) {
   const { value, duration = 2, delay, options, className, style } = props;
-  const [curVal, setCurVal] = useState(0);
+  const fromVal = useRef<number>(0);
+  const elRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
-    const v = { curVal };
-    const tween = gsap.to(v, {
-      curVal: value,
-      duration,
-      delay,
-      onUpdate: function () {
-        setCurVal(this.targets()[0].curVal.toLocaleString("zh-CN", options));
+    let tween: gsap.core.Tween;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        // 只在第一次进入视口时触发
+        if (entry.isIntersecting) {
+          tween = gsap.to(fromVal, {
+            current: value,
+            duration,
+            delay,
+            ease: "power1.out",
+            onUpdate() {
+              elRef.current.innerHTML = fromVal.current.toLocaleString(
+                "zh-CN",
+                options
+              );
+            },
+          });
+        }
       },
-    });
+      {
+        threshold: 0.1,
+      }
+    );
+
+    observer.observe(elRef.current);
 
     return () => {
-      tween.kill();
+      tween?.kill();
+      observer.disconnect();
     };
   }, [value, duration, delay, options]);
 
   return (
-    <div className={className} style={style}>
-      {curVal}
+    <div ref={elRef} className={className} style={style}>
+      0
     </div>
   );
 }
