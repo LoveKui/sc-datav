@@ -1,0 +1,211 @@
+import { useEffect, useRef } from "react";
+import styled from "styled-components";
+import { useMapStyleStore } from "./stores";
+import useMoveTo from "@/hooks/useMoveTo";
+import AutoFit from "@/components/autoFit";
+import Button from "@/components/button";
+import Chart1 from "./chart1";
+import Chart2 from "./chart2";
+import Chart3 from "./chart3";
+import Chart4 from "./chart4";
+
+import bg from "@/assets/card_bg.jpg";
+import topBg from "@/assets/images/top-bg.png";
+import { Space } from "antd";
+
+import  logo from "@/assets/images/logo512.png";
+
+import Header  from  "./Components/Header"
+
+const Radial = styled.div`
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: radial-gradient(transparent 60%, black);
+  transition: opacity 0.8s;
+`;
+
+const GridWrapper = styled.div`
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+  padding: 20px;
+`;
+
+const Card = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  color: #ffffff;
+  pointer-events: auto;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(141, 141, 141, 0.2);
+  border-radius: 4px;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url(${bg});
+    background-size: 100px;
+    opacity: 0.2;
+    border-radius: 0px;
+    z-index: -1;
+    z-index: -1;
+  }
+`;
+
+const Title = styled.div`
+  font-family: "pmzd";
+  width: 100%;
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 36px;
+  letter-spacing: 0px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+  color: #ffffff;
+  padding-left: 120px;
+  margin-top:-10px;
+`;
+
+const TitleWrapper = styled(Card)`
+  flex-direction: row;
+  align-items: center;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url(${topBg});
+    background-size: 100% 100%;
+    opacity: 0.8;
+    border-radius: 0px;
+    z-index: -1;
+  }
+`;
+
+const CardTitle = styled.div`
+  font-family: "pmzd";
+  font-size: 28px;
+  padding: 8px 16px;
+`;
+
+const BottomBox = styled.div`
+  position: absolute;
+  pointer-events: auto;
+  bottom: 20px;
+  left: 50%;
+  display: flex;
+  gap: 20px;
+`;
+
+
+const LogoImg = styled.img`
+  width:35px;
+  height:35px
+  
+`;
+
+const RightContent = styled.div`
+
+width:300px;
+margin-top:-14px;
+
+`;
+
+
+export default function Content() {
+  const radialRef = useRef<HTMLDivElement>(null!);
+  const topBox = useMoveTo("toBottom", 0.6, 1);
+  const leftBox = useMoveTo("toRight", 0.8, 1.5);
+  const leftBox1 = useMoveTo("toRight", 0.8, 1.5);
+  const rightBox = useMoveTo("toLeft", 0.8, 1.5);
+  const rightBox1 = useMoveTo("toLeft", 0.8, 1.5);
+  const bottomBox = useMoveTo("toTop", 0.8, 1.5, "translateX(-50%)");
+
+  const togglePureMode = useMapStyleStore((s) => s.togglePureMode);
+  const toggleMapStyle = useMapStyleStore((s) => s.toggleMapStyle);
+
+  useEffect(() => {
+    let initial = true;
+    bottomBox.restart(initial);
+
+    const unSub = useMapStyleStore.subscribe(
+      (s) => s.pureMode,
+      (v) => {
+        if (!v) {
+          topBox.restart(initial);
+          leftBox.restart(initial);
+          leftBox1.restart(initial);
+          rightBox.restart(initial);
+          rightBox1.restart(initial);
+          // radialRef.current.style.setProperty("opacity", "1");
+        } else {
+          topBox.reverse();
+          leftBox.reverse();
+          leftBox1.reverse();
+          rightBox.reverse();
+          rightBox1.reverse();
+          // radialRef.current.style.setProperty("opacity", "0");
+        }
+      },
+      { fireImmediately: true }
+    );
+
+    initial = false;
+
+    return () => {
+      initial = true;
+      unSub();
+    };
+  }, []);
+
+  return (
+    <AutoFit>
+      {/* <Radial ref={radialRef} /> */}
+      {/* <TitleWrapper ref={topBox.ref}>
+        <Title>杨浦五角场</Title>
+        <RightContent >
+        <Space>
+          <LogoImg src={ logo} />
+          <div>杨浦公安</div>
+          <TimeDisplay/>
+
+        </Space>
+        </RightContent>
+       
+      </TitleWrapper> */}
+
+      <Header/>
+      <GridWrapper>
+        <Card ref={leftBox.ref} style={{ gridArea: "1 / 1 / 3 / 2" }}>
+          <CardTitle>月度进出口商品总价值</CardTitle>
+          <Chart1 />
+        </Card>
+        <Card ref={leftBox1.ref} style={{ gridArea: "3 / 1 / 5 / 2" }}>
+          <CardTitle>进出口商品品类贸易值</CardTitle>
+          <Chart2 />
+        </Card>
+        <Card ref={rightBox.ref} style={{ gridArea: "1 / 4 / 3 / 5" }}>
+          <CardTitle style={{ textAlign: "right" }}>三产季度增加值</CardTitle>
+          <Chart3 />
+        </Card>
+        <Card ref={rightBox1.ref} style={{ gridArea: "3 / 4 / 5 / 5" }}>
+          <CardTitle style={{ textAlign: "right" }}>进出口商品信息</CardTitle>
+          <Chart4 />
+        </Card>
+
+        <BottomBox ref={bottomBox.ref}>
+          <Button onClick={toggleMapStyle}>切换样式</Button>
+          <Button onClick={togglePureMode}>纯净模式</Button>
+        </BottomBox>
+      </GridWrapper>
+    </AutoFit>
+  );
+}

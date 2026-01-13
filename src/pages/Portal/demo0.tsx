@@ -44,6 +44,11 @@ const LevaBox = styled.div`
   }
 `;
 
+const MapContainer = styled.div`
+ width:100%;
+ height:100%;
+`
+
 export default function SichuanMap() {
   const controls = useControls({
     网格: folder({
@@ -103,7 +108,7 @@ export default function SichuanMap() {
 
       map.changeMouseModel(true);
 
-      map.addControl(new map3dduk.control.LocationBar());
+      // map.addControl(new map3dduk.control.LocationBar());
       // map.addControl(new map3dduk.control.SwitchMode());
       // map.addControl(new map3dduk.control.EagleEyeMap());
 
@@ -112,18 +117,19 @@ export default function SichuanMap() {
       handlerRef.current = new Cesium.ScreenSpaceEventHandler(
         map.viewer.canvas
       );
+      mapCache.current = map;
     }
   }, []);
 
   return (
     <div>
-      <LevaBox>
+      {/* <LevaBox>
         <Leva collapsed />
-      </LevaBox>
+      </LevaBox> */}
 
       <Wrapper>
         <CanvasWrapper>
-          <div id="map"></div>
+          <div id="map" style={{width:"100%",height:"100%"}}></div>
           {/* <Canvas camera={{ fov: 70 }} dpr={[1, 2]}>
             <color attach="background" args={[controls.GBackground]} />
             <Grid

@@ -1,0 +1,59 @@
+// 变量定义
+@bg-blue: #8fb1cc;
+@bg-green: #c5d38a;
+@text-color: #4a5d62;
+
+.time-container {
+  display: inline-flex;
+  align-items: center;
+  background-color: @bg-blue;
+  padding: 10px 20px;
+  font-family: 'Arial Black', sans-serif; // 建议寻找类似的加粗无衬线字体
+  color: @text-color;
+  user-select: none;
+
+  .time-main {
+    display: flex;
+    align-items: center;
+    font-size: 80px; // 根据需要调整大小
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -2px;
+
+    .digit {
+      display: inline-block;
+      min-width: 1.1em; // 防止数字切换抖动
+      text-align: center;
+    }
+
+    .separator {
+      margin: 0 5px;
+      position: relative;
+      top: -4px; // 调整冒号垂直位置
+    }
+  }
+
+  .date-box {
+    background-color: @bg-green;
+    margin-left: 15px;
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    height: 100%;
+
+    .day-name {
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: bold;
+    }
+
+    .date-num {
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+  }
+}

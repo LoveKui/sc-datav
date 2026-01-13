@@ -1,11 +1,11 @@
 import { Route, Routes } from "react-router";
-import Demo0 from "@/pages/Demo0";
+import Portal from "@/pages/Portal";
 import Demo1 from "@/pages/Demo1";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<Demo0 />} />
+      <Route path="/" element={<Portal />} />
       <Route path="/demo1" element={<Demo1 />} />
     </Routes>
   );
