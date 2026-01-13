@@ -25,7 +25,10 @@
     "styled-components": "^6.1.19",
     "three": "^0.181.2",
     "topojson-client": "^3.1.0",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "@loveduk/cache-manager": "^1.0.2",
+    "@loveduk/map3d": "^1.1.14",
+    "cesium": "1.118.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
@@ -42,11 +45,11 @@
     "globals": "^16.4.0",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.45.0",
-    "vite": "npm:rolldown-vite@7.1.14"
+    "vite": "^5.4.0"
   },
   "pnpm": {
     "overrides": {
-      "vite": "npm:rolldown-vite@7.1.14"
+      "@zip.js/zip.js": "2.4.26"
     }
   }
 }
