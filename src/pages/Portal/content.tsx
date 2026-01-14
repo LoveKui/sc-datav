@@ -13,9 +13,9 @@ import bg from "@/assets/card_bg.jpg";
 import topBg from "@/assets/images/top-bg.png";
 import { Space } from "antd";
 
-import  logo from "@/assets/images/logo512.png";
+import logo from "@/assets/images/logo512.png";
 
-import Header  from  "./Components/Header"
+import Header from "./Components/Header";
 
 const Radial = styled.div`
   position: absolute;
@@ -72,7 +72,7 @@ const Title = styled.div`
   overflow: hidden;
   color: #ffffff;
   padding-left: 120px;
-  margin-top:-10px;
+  margin-top: -10px;
 `;
 
 const TitleWrapper = styled(Card)`
@@ -103,20 +103,6 @@ const BottomBox = styled.div`
   left: 50%;
   display: flex;
   gap: 20px;
-`;
-
-
-const LogoImg = styled.img`
-  width:35px;
-  height:35px
-  
-`;
-
-const RightContent = styled.div`
-
-width:300px;
-margin-top:-14px;
-
 `;
 
 
@@ -182,7 +168,7 @@ export default function Content() {
        
       </TitleWrapper> */}
 
-      <Header/>
+      <Header ref={topBox.ref} />
       <GridWrapper>
         <Card ref={leftBox.ref} style={{ gridArea: "1 / 1 / 3 / 2" }}>
           <CardTitle>月度进出口商品总价值</CardTitle>
