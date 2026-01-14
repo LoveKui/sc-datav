@@ -3,7 +3,7 @@
  * @Author: duk
  * @Date: 2026-01-14 16:20:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-14 17:36:32
+ * @LastEditTime: 2026-01-14 23:55:09
  */
 import React, {
   useEffect,
@@ -22,10 +22,10 @@ import mapService from "@/utils/mapService";
 
 window.CESIUM_BASE_URL = "lib/Cesium/";
 interface Props {}
-interface Ref {
+export  interface MapRef {
   getMap: () => map3dduk.Map | null;
 }
-const Index = forwardRef<Ref, Props>((props, ref) => {
+const Index = forwardRef<MapRef, Props>((props, ref) => {
   const mapCache = useRef<map3dduk.Map>(null);
   const handlerRef = useRef<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -49,7 +49,7 @@ const Index = forwardRef<Ref, Props>((props, ref) => {
 
       const map = new map3dduk.Map("map", {
         terrain: {
-          show: false,
+          show: true,
           // url: "/terrain",
         },
 
@@ -95,12 +95,34 @@ const Index = forwardRef<Ref, Props>((props, ref) => {
       map.addControl(new map3dduk.control.SwitchMode());
       //   map.addControl(new map3dduk.control.EagleEyeMap());
 
-      map.viewer.scene.globe.depthTestAgainstTerrain = false;
+      // map.viewer.scene.globe.depthTestAgainstTerrain = false;
 
       handlerRef.current = new Cesium.ScreenSpaceEventHandler(
         map.viewer.canvas
       );
       mapCache.current = map;
+
+
+      const tilesetLayer = new map3dduk.layer.TilesetLayer({
+        //url:"http://hongtu.shenzhuo.vip:54953/mapdata/3dtiles/nxgerui/map/3dt/tileset.json",
+        // url: "http://hongtu.shenzhuo.vip:54953/mapdata/3dtiles/mdj3DTEILS/tileset.json",
+        // url:"http://111.229.72.197/mapdata/3dtiles/%E4%B8%9C%E5%8C%97%E6%A8%A1%E5%9E%8B/tileset.json",
+
+        url:"https://111.229.72.197/mapdata/3dtiles/terra_b3dms/tileset.json",
+        position: {
+          alt: 0,
+          // alt: -2,
+        },
+        maximumScreenSpaceError:1
+
+      });
+
+      map.addLayer(tilesetLayer);
+      tilesetLayer.show = true;
+
+      tilesetLayer.on(map3dduk.EventType.load, () => {
+        tilesetLayer.flyTo();
+      });
 
       // 设置地图实例到mapService
       mapService.setMapInstance(map);

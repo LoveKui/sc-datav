@@ -63,3 +63,6 @@ export type CityGeoJSON = GeoJSONFeatureCollection<
   CityProperties,
   { type: "MultiPolygon"; coordinates: number[][][][] }
 >;
+
+
+export type MenuMode = "overview" | "responsePlan";

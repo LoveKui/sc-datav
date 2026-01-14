@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { useMapStyleStore } from "./stores";
 import useMoveTo from "@/hooks/useMoveTo";
@@ -8,6 +8,7 @@ import Chart1 from "./chart1";
 import Chart2 from "./chart2";
 import Chart3 from "./chart3";
 import Chart4 from "./chart4";
+import { Typography } from "antd";
 
 import bg from "@/assets/card_bg.jpg";
 import topBg from "@/assets/images/top-bg.png";
@@ -16,14 +17,11 @@ import { Space } from "antd";
 import logo from "@/assets/images/logo512.png";
 
 import Header from "./Components/Header";
+import styles from "./index.module.less";
+import type { MenuMode } from "@/types/map";
+import { mapDataConfig } from "./const";
 
-const Radial = styled.div`
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: radial-gradient(transparent 60%, black);
-  transition: opacity 0.8s;
-`;
+const { Title: TitleText } = Typography;
 
 const GridWrapper = styled.div`
   flex: 1;
@@ -75,21 +73,6 @@ const Title = styled.div`
   margin-top: -10px;
 `;
 
-const TitleWrapper = styled(Card)`
-  flex-direction: row;
-  align-items: center;
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image: url(${topBg});
-    background-size: 100% 100%;
-    opacity: 0.8;
-    border-radius: 0px;
-    z-index: -1;
-  }
-`;
-
 const CardTitle = styled.div`
   font-family: "pmzd";
   font-size: 28px;
@@ -105,7 +88,6 @@ const BottomBox = styled.div`
   gap: 20px;
 `;
 
-
 export default function Content() {
   const radialRef = useRef<HTMLDivElement>(null!);
   const topBox = useMoveTo("toBottom", 0.6, 1);
@@ -118,20 +100,45 @@ export default function Content() {
   const togglePureMode = useMapStyleStore((s) => s.togglePureMode);
   const toggleMapStyle = useMapStyleStore((s) => s.toggleMapStyle);
 
+  const toggleMenuMode = useMapStyleStore((s) => s.toggleMenuMode);
+
+  const topShowRef = useRef<boolean>(false);
+
+  const [menuModeState, setMenuModeState] = useState<MenuMode>("overview");
+
   useEffect(() => {
     let initial = true;
     bottomBox.restart(initial);
 
-    const unSub = useMapStyleStore.subscribe(
-      (s) => s.pureMode,
+    const unSub2 = useMapStyleStore.subscribe(
+      (s) => ({
+        menuMode: s.menuMode,
+      }),
       (v) => {
-        if (!v) {
-          topBox.restart(initial);
+        const { menuMode } = v;
+
+        setMenuModeState(menuMode);
+      },
+      { fireImmediately: true }
+    );
+
+    const unSub = useMapStyleStore.subscribe(
+      (s) => ({
+        pureMode: s.pureMode,
+      }),
+      (v) => {
+        const { pureMode } = v;
+        if (!pureMode) {
+          if (!topShowRef.current) {
+            topBox.restart(initial);
+          }
           leftBox.restart(initial);
           leftBox1.restart(initial);
           rightBox.restart(initial);
           rightBox1.restart(initial);
           // radialRef.current.style.setProperty("opacity", "1");
+
+          topShowRef.current = true;
         } else {
           topBox.reverse();
           leftBox.reverse();
@@ -149,32 +156,30 @@ export default function Content() {
     return () => {
       initial = true;
       unSub();
+      unSub2();
+      topShowRef.current = false;
     };
   }, []);
 
   return (
     <AutoFit>
-      {/* <Radial ref={radialRef} /> */}
-      {/* <TitleWrapper ref={topBox.ref}>
-        <Title>杨浦五角场</Title>
-        <RightContent >
-        <Space>
-          <LogoImg src={ logo} />
-          <div>杨浦公安</div>
-          <TimeDisplay/>
-
-        </Space>
-        </RightContent>
-       
-      </TitleWrapper> */}
-
       <Header ref={topBox.ref} />
       <GridWrapper>
         <Card ref={leftBox.ref} style={{ gridArea: "1 / 1 / 3 / 2" }}>
-          <CardTitle>月度进出口商品总价值</CardTitle>
-          <Chart1 />
+          <>
+            <CardTitle>{mapDataConfig[menuModeState].title}</CardTitle>
+            <div className={styles.infoDiv}>
+              {mapDataConfig[menuModeState].info.map((k) => (
+                <TitleText style={{ color: "white" }} level={4}>
+                  {k}
+                </TitleText>
+              ))}
+            </div>
+          </>
+
+          {/* <Chart1 /> */}
         </Card>
-        <Card ref={leftBox1.ref} style={{ gridArea: "3 / 1 / 5 / 2" }}>
+        {/* <Card ref={leftBox1.ref} style={{ gridArea: "3 / 1 / 5 / 2" }}>
           <CardTitle>进出口商品品类贸易值</CardTitle>
           <Chart2 />
         </Card>
@@ -185,11 +190,25 @@ export default function Content() {
         <Card ref={rightBox1.ref} style={{ gridArea: "3 / 4 / 5 / 5" }}>
           <CardTitle style={{ textAlign: "right" }}>进出口商品信息</CardTitle>
           <Chart4 />
-        </Card>
+        </Card> */}
 
         <BottomBox ref={bottomBox.ref}>
-          <Button onClick={toggleMapStyle}>切换样式</Button>
-          <Button onClick={togglePureMode}>纯净模式</Button>
+          <Button
+            style={{ width: 150 }}
+            onClick={() => {
+              toggleMenuMode("overview");
+            }}
+          >
+            概览
+          </Button>
+          <Button
+            style={{ width: 150 }}
+            onClick={() => {
+              toggleMenuMode("responsePlan");
+            }}
+          >
+            应急预案
+          </Button>
         </BottomBox>
       </GridWrapper>
     </AutoFit>
