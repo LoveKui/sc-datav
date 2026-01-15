@@ -10,7 +10,9 @@ import Chart3 from "./chart3";
 import Chart4 from "./chart4";
 import { Typography } from "antd";
 
-import bg from "@/assets/card_bg.jpg";
+import bg from "@/assets/card_bg_left.png";
+
+import titleBg from "@/assets/title-bg.png";
 import topBg from "@/assets/images/top-bg.png";
 import { Space } from "antd";
 
@@ -30,7 +32,7 @@ const GridWrapper = styled.div`
   grid-template-columns: repeat(4, minmax(0, 1fr));
   grid-template-rows: repeat(4, minmax(0, 1fr));
   gap: 20px;
-  padding: 20px;
+  /* padding: 20px; */
 `;
 
 const Card = styled.div`
@@ -39,7 +41,7 @@ const Card = styled.div`
   flex-direction: column;
   color: #ffffff;
   pointer-events: auto;
-  backdrop-filter: blur(10px);
+  // backdrop-filter: blur(10px);
   border: 1px solid rgba(141, 141, 141, 0.2);
   border-radius: 4px;
 
@@ -48,8 +50,8 @@ const Card = styled.div`
     position: absolute;
     inset: 0;
     background-image: url(${bg});
-    background-size: 100px;
-    opacity: 0.2;
+    background-size: 100% 100%;
+    // opacity: 0.2;
     border-radius: 0px;
     z-index: -1;
     z-index: -1;
@@ -75,8 +77,15 @@ const Title = styled.div`
 
 const CardTitle = styled.div`
   font-family: "pmzd";
-  font-size: 28px;
-  padding: 8px 16px;
+  font-size: 24px;
+  padding: 25px 16px;
+  background-image: url(${titleBg});
+  background-size: 100% 100%;
+  color: #a5d8fc;
+`;
+
+const CardTitleText = styled.div`
+  margin-left: 20px;
 `;
 
 const BottomBox = styled.div`
@@ -165,9 +174,13 @@ export default function Content() {
     <AutoFit>
       <Header ref={topBox.ref} />
       <GridWrapper>
-        <Card ref={leftBox.ref} style={{ gridArea: "1 / 1 / 3 / 2" }}>
+        <Card ref={leftBox.ref} style={{ gridArea: "1 / 1 / 5 / 2" }}>
           <>
-            <CardTitle>{mapDataConfig[menuModeState].title}</CardTitle>
+            <CardTitle>
+              <CardTitleText>
+                {mapDataConfig[menuModeState].title}
+              </CardTitleText>
+            </CardTitle>
             <div className={styles.infoDiv}>
               {mapDataConfig[menuModeState].info.map((k) => (
                 <TitleText style={{ color: "white" }} level={4}>
@@ -198,6 +211,7 @@ export default function Content() {
             onClick={() => {
               toggleMenuMode("overview");
             }}
+            $isSelected={menuModeState === "overview" ? true : false}
           >
             概览
           </Button>
@@ -206,6 +220,7 @@ export default function Content() {
             onClick={() => {
               toggleMenuMode("responsePlan");
             }}
+            $isSelected={menuModeState === "responsePlan" ? true : false}
           >
             应急预案
           </Button>

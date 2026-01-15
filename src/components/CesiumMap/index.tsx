@@ -3,7 +3,7 @@
  * @Author: duk
  * @Date: 2026-01-14 16:20:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-15 08:07:17
+ * @LastEditTime: 2026-01-15 16:24:54
  */
 import React, {
   useEffect,
@@ -92,7 +92,7 @@ const Index = forwardRef<MapRef, Props>((props, ref) => {
       map.changeMouseModel(true);
 
       //   map.addControl(new map3dduk.control.LocationBar());
-      map.addControl(new map3dduk.control.SwitchMode());
+      // map.addControl(new map3dduk.control.SwitchMode());
       //   map.addControl(new map3dduk.control.EagleEyeMap());
 
       // map.viewer.scene.globe.depthTestAgainstTerrain = false;
@@ -108,7 +108,7 @@ const Index = forwardRef<MapRef, Props>((props, ref) => {
         // url: "http://hongtu.shenzhuo.vip:54953/mapdata/3dtiles/mdj3DTEILS/tileset.json",
         // url:"http://111.229.72.197/mapdata/3dtiles/%E4%B8%9C%E5%8C%97%E6%A8%A1%E5%9E%8B/tileset.json",
 
-        url:"https://111.229.72.197/mapdata/3dtiles/terra_b3dms/tileset.json",
+        url:"http://111.229.72.197/mapdata/3dtiles/terra_b3dms/tileset.json",
         position: {
           alt: 0,
           // alt: -2,

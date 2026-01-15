@@ -15,7 +15,7 @@ export const useMapStyleStore = create<MapStyleStore>()(
   subscribeWithSelector((set) => ({
     newStyle: false,
     pureMode: false,
-    menuMode: "overview",
+    menuMode:"overview",
     toggleMapStyle: () => set((s) => ({ newStyle: !s.newStyle })),
     togglePureMode: () => set((s) => ({ pureMode: !s.pureMode })),
     toggleMenuMode: (v: MenuMode) => set(() => ({ menuMode: v })),

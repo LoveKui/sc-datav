@@ -17,12 +17,10 @@ import * as Cesium from "cesium";
 import { initData, mapDataConfig } from "./const";
 import { useMapStyleStore } from "./stores";
 
-let drawlayer = {} as map3dduk.layer.GraphicLayer;
 const primitiveDrawlayer = {} as map3dduk.layer.GraphicLayer;
-let templayer = {} as map3dduk.layer.GraphicLayer;
 
-let tdtLayer = null;
 const cacheManager = {};
+let drawlayer = {} as map3dduk.layer.GraphicLayer;
 
 const Wrapper = styled.div`
   position: relative;
@@ -58,12 +56,44 @@ export default function SichuanMap() {
   const mapCache = useRef<map3dduk.Map>(null);
 
   const menuMode = useMapStyleStore((s) => s.menuMode);
+  let templayer = useRef<map3dduk.layer.GraphicLayer | null>(null);
+
+  useEffect(() => {
+    const aa = initData.map((k, index) => {
+      if (k.type === "billboard") {
+        return {
+          ...k,
+
+          style: {
+            ...k.style,
+            label: {
+              ...k.style.label,
+              text: "岗哨" + (index + 1),
+            },
+          },
+
+          properties: {
+            peopleCount: 4,
+            name: "民警" + (index + 1),
+            code: index + 1,
+            type: "live",
+          },
+        };
+      }
+
+      return k;
+    });
+
+    console.log(aa);
+  }, []);
 
   useEffect(() => {
     if (mapRef.current) {
       mapCache.current = mapRef.current.getMap();
 
       const map = mapCache.current;
+
+      console.log("map", map);
 
       const layer = new map3dduk.layer.GraphicLayer({
         id: "sss",
@@ -127,10 +157,18 @@ export default function SichuanMap() {
         },
       });
 
-      map.addLayer(layer);
+      // if (drawlayer) {
+      //   return;
+      // }
+
+      map?.addLayer(layer);
       drawlayer = layer;
 
-      templayer = new map3dduk.layer.GraphicLayer({
+      if (templayer.current) {
+        return;
+      }
+
+      templayer.current = new map3dduk.layer.GraphicLayer({
         id: "temp",
         layerType: "entity",
         contextmenuItems: [
@@ -196,26 +234,150 @@ export default function SichuanMap() {
         // popupOptions,
       });
 
-      map.addLayer(templayer);
+      map?.addLayer(templayer.current);
     }
   }, []);
 
+  const getContent = (properties: any) => {
+    if (properties.properties.type === "live") {
+      return `  <li>岗哨：${properties.style.label?.text}</li>
+                      <li>姓名：${properties.properties?.name}</li>
+                       <li>编号${properties.properties?.code}</li>
+                       `;
+    } else {
+      return ` <li>户主：${properties.style.label?.text}</li>
+                      <li>面积：${properties.properties?.area}</li>
+                       <li>承包人：${properties.properties?.owner}</li>
+                       <li>土地性质：${properties.properties?.landNature}</li>
+                      <li>耕种情况：${properties.properties?.plantingType}</li>`;
+    }
+  };
+
   const renderDara = (data) => {
+    console.log("开始渲染数据，数据数量:", data.length);
     data.forEach((k, index) => {
+      console.log(`渲染第 ${index} 个图形，类型: ${k.type}, ID: ${k.id}`);
       if (k.type === "polygon") {
         const polygon = new map3dduk.graphic.PolygonEntity({
           id: k.id,
           positions: k.coordinates,
 
+          // popupOptions: {
+          //   html: `<div class="waper">
+          //           <div class="title">${k.style.label?.text}</div>
+          //           <div class="content">
+          //             <div class="content-left"><img src="${
+          //               k.properties?.type === "live"
+          //                 ? `images/people-${index + 1}.jpg`
+          //                 : "images/glass.png"
+          //             }"/></div>
+          //               <div class="content-right">
+          //               <ul>
+          //               ${getContent(k)}
+          //               </ul>
+          //             </div>
+          //           </div>
+
+          //   </div>`,
+          //   template: "<div>{{content}}</div>",
+          //   closeButton: true,
+          //   className: "popup-people",
+          //   width: 500,
+          //   minHeight: 270,
+          //   offsetX: 250,
+          //   offsetY: 30,
+          // },
+          style: {
+            ...k.style,
+            color:Cesium.Color.TRANSPARENT,
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            perPositionHeight: false,
+            opacity: 0.3,
+            fill:false,
+            outline:true,
+            outlineStyle: {
+              clampToGround:true,
+              materialType: map3dduk.MaterialType.Other,
+              material: new Cesium.PolylineDashMaterialProperty({
+                color: Cesium.Color.GREEN,
+                dashLength: 40,
+              }),
+            },
+
+            // highlight: {
+            //   type: map3dduk.EventType.click,
+            //   hightLightStyle: {
+            //     opacity: 0.8,
+            //   },
+            // },
+
+            // label: {
+            //   ...k.style.label,
+            //   background: true,
+            //   backgroundColor: "#454646",
+            //   backgroundOpacity: 0.5,
+            //   addHeight: 10,
+            //   color: "white",
+            //   heightReference: Cesium.HeightReference.NONE,
+            // },
+          },
+        });
+
+        templayer.current?.addGraphic(polygon);
+      } else if (k.type === "polyline") {
+        const customColor =
+          menuMode === "overview"
+            ? {
+                materialType: map3dduk.MaterialType.Other,
+                material: map3dduk.MaterialUtil.createMaterialProperty(
+                  map3dduk.MaterialType.PolylineTrail,
+                  {
+                    color: Cesium.Color.RED,
+                    // duration: 20000,
+                    duration: 3000,
+                    image: "images/Textures/jsx5.png",
+                  }
+                ),
+                width: 30,
+              }
+            : {
+                color: "yellow",
+                width: 5,
+              };
+        const polyline = new map3dduk.graphic.PolylineEntity({
+          id: k.id,
+          positions: k.coordinates,
+
+          style: {
+            ...k.style,
+
+            isClose: false,
+            label: {},
+            ...customColor,
+            // color: menuMode==="overview"?"red": "yellow",
+            // materialType: map3dduk.MaterialType.Other,
+            // material: map3dduk.MaterialUtil.createMaterialProperty(
+            //   map3dduk.MaterialType.PolylineTrail,
+            //   {
+            //     color: Cesium.Color.RED,
+            //     // duration: 20000,
+            //     duration: 3000,
+            //     image: "images/Textures/jsx5.png",
+            //   }
+            // ),
+          },
+        });
+        templayer.current?.addGraphic(polyline);
+      } else if (k.type === "billboard") {
+        const [x, y, z] = k.coordinates;
+        const point = new map3dduk.graphic.BillboardEntity({
+          id: k.id,
+          position: [x, y, 22.5],
           popupOptions: {
             html: `<div class="waper">
                     <div class="title">${k.style.label?.text}</div>
                     <div class="content">
-                      <div class="content-left"><img src="${
-                        k.properties?.type === "live"
-                          ? `images/people-${index + 1}.jpg`
-                          : "images/glass.png"
-                      }"/></div>
+                      <div class="content-left"><img src="images/people-2.jpg"/></div>
                         <div class="content-right">
                         <ul>
                         ${getContent(k)}
@@ -230,80 +392,6 @@ export default function SichuanMap() {
             width: 500,
             minHeight: 270,
             offsetX: 250,
-            offsetY: 30,
-          },
-          style: {
-            ...k.style,
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            perPositionHeight: false,
-            opacity: 0.3,
-            highlight: {
-              type: map3dduk.EventType.click,
-              hightLightStyle: {
-                opacity: 0.8,
-              },
-            },
-
-            label: {
-              ...k.style.label,
-              background: true,
-              backgroundColor: "#454646",
-              backgroundOpacity: 0.5,
-              addHeight: 10,
-              color: "white",
-              heightReference: Cesium.HeightReference.NONE,
-            },
-          },
-        });
-
-        templayer.addGraphic(polygon);
-      } else if (k.type === "polyline") {
-        const polyline = new map3dduk.graphic.PolylineEntity({
-          id: k.id,
-          positions: k.coordinates,
-
-          style: {
-            ...k.style,
-            width: 8,
-            isClose: false,
-            label: {},
-            color: "yellow",
-            // materialType: map3dduk.MaterialType.Other,
-            // material: map3dduk.MaterialUtil.createMaterialProperty(
-            //   map3dduk.MaterialType.Spriteline,
-            //   {
-            //     color: Cesium.Color.GREEN,
-            //     // duration: 20000,
-            //     duration: 1000,
-            //     image: "images/line-arrow-dovetail.png",
-            //   }
-            // ),
-          },
-        });
-        templayer.addGraphic(polyline);
-      } else if (k.type === "billboard") {
-        const [x, y, z] = k.coordinates;
-        const point = new map3dduk.graphic.BillboardEntity({
-          id: k.id,
-          position: [x, y, 22.5],
-          popupOptions: {
-            html: `<div class="waper">
-            <div class="title">${k.style.label?.text}</div>
-            <div class="content"> 
-              <div class="content-left">
-              <video src='http://data.mars3d.cn/file/video/lukou.mp4' controls autoplay style="width: 230px;" ></video>
-              
-              </div>
-                
-            </div>
-         
-    </div>`,
-            template: "<div>{{content}}</div>",
-            closeButton: true,
-            className: "popup-camera",
-            width: 400,
-            minHeight: 250,
-            offsetX: 150,
             offsetY: 30,
           },
 
@@ -324,7 +412,7 @@ export default function SichuanMap() {
           },
         });
 
-        templayer.addGraphic(point);
+        templayer.current?.addGraphic(point);
         // point.bindHighlight({
         //   type: map3dduk.EventType.mouseMove,
         //   hightLightStyle: {
@@ -371,7 +459,7 @@ export default function SichuanMap() {
           },
         });
 
-        templayer.addGraphic(point);
+        templayer.current?.addGraphic(point);
         // point.bindHighlight({
         //   type: map3dduk.EventType.mouseMove,
         //   hightLightStyle: {
@@ -384,10 +472,18 @@ export default function SichuanMap() {
   };
 
   useEffect(() => {
-    if (mapCache.current && templayer) {
-      templayer.removeAllGraphic();
+    if (mapCache.current && templayer?.current) {
+      console.log("切换菜单模式:", menuMode);
+      console.log("清除前图形数量:", templayer.current.graphics?.length || 0);
+
+      templayer.current?.removeAllGraphic();
+
+      console.log("清除后图形数量:", templayer.current.graphics?.length || 0);
+      console.log("要渲染的数据:", mapDataConfig[menuMode].data);
 
       renderDara(mapDataConfig[menuMode].data);
+
+      console.log("渲染后图形数量:", templayer.current.graphics?.length || 0);
     }
   }, [menuMode]);
 
@@ -586,6 +682,7 @@ export default function SichuanMap() {
           position: "absolute",
           zIndex: 9999999,
           top: 0,
+          display:"none"
         }}
       >
         {/* */}
@@ -595,8 +692,9 @@ export default function SichuanMap() {
         <Button onClick={drawPolylinelClick}>绘制线</Button>
 
         <Button onClick={handlerClick}>绘制图标点</Button>
+        <Button onClick={drawPolygonClick}>绘制面</Button>
         {/* <Button onClick={drawModelClick}>绘制模型</Button>
-        <Button onClick={drawPolygonClick}>绘制面</Button> */}
+         */}
         <Button onClick={removeAlllClick}>清除</Button>
 
         <Button onClick={drawEndClick}>结束标会</Button>
@@ -604,7 +702,14 @@ export default function SichuanMap() {
         {/* <Button onClick={exportImageClick}>导出图片</Button> */}
 
         <Button onClick={exportgeoJson}>导出GEOJSON</Button>
-        <Button onClick={removeLayer}>移除图层</Button>
+
+        <Button
+          onClick={() => {
+            templayer.current?.clear();
+          }}
+        >
+          清空
+        </Button>
         {/* <Button onClick={cacheSizeHandler}>计算缓存大小</Button>
         <Button onClick={swipeHandler}>卷帘分析</Button> */}
       </div>

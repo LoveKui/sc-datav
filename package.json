@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -29,7 +29,8 @@
     "styled-components": "^6.1.19",
     "three": "^0.181.2",
     "topojson-client": "^3.1.0",
-    "zustand": "^5.0.8"
+    "zustand": "^5.0.8",
+    "vite-plugin-compression": "^0.5.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",
