@@ -14,7 +14,8 @@ import { Button } from "antd";
 import * as map3dduk from "@loveduk/map3d";
 
 import * as Cesium from "cesium";
-import { initData } from "./const";
+import { initData, mapDataConfig } from "./const";
+import { useMapStyleStore } from "./stores";
 
 let drawlayer = {} as map3dduk.layer.GraphicLayer;
 const primitiveDrawlayer = {} as map3dduk.layer.GraphicLayer;
@@ -55,6 +56,8 @@ export default function SichuanMap() {
 
   const mapRef = useRef<MapRef>(null);
   const mapCache = useRef<map3dduk.Map>(null);
+
+  const menuMode = useMapStyleStore((s) => s.menuMode);
 
   useEffect(() => {
     if (mapRef.current) {
@@ -193,193 +196,200 @@ export default function SichuanMap() {
         // popupOptions,
       });
 
-
       map.addLayer(templayer);
-
-      initData.forEach((k, index) => {
-        if (k.type === "polygon") {
-          const polygon = new map3dduk.graphic.PolygonEntity({
-            id: k.id,
-            positions: k.coordinates,
-
-            popupOptions: {
-              html: `<div class="waper">
-                      <div class="title">${k.style.label?.text}</div>
-                      <div class="content">
-                        <div class="content-left"><img src="${
-                          k.properties?.type === "live"
-                            ? `images/people-${index + 1}.jpg`
-                            : "images/glass.png"
-                        }"/></div>
-                          <div class="content-right">
-                          <ul>
-                          ${getContent(k)}
-                          </ul>
-                        </div>
-                      </div>
-
-              </div>`,
-              template: "<div>{{content}}</div>",
-              closeButton: true,
-              className: "popup-people",
-              width: 500,
-              minHeight: 270,
-              offsetX: 250,
-              offsetY: 30,
-            },
-            style: {
-              ...k.style,
-              heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-              perPositionHeight: false,
-              opacity: 0.3,
-              highlight: {
-                type: map3dduk.EventType.click,
-                hightLightStyle: {
-                  opacity: 0.8,
-                },
-              },
-
-              label: {
-                ...k.style.label,
-                background: true,
-                backgroundColor: "#454646",
-                backgroundOpacity: 0.5,
-                addHeight: 10,
-                color: "white",
-                heightReference: Cesium.HeightReference.NONE,
-              },
-            },
-          });
-
-          templayer.addGraphic(polygon);
-        } else if (k.type === "polyline") {
-          const polyline = new map3dduk.graphic.PolylineEntity({
-            id: k.id,
-            positions: k.coordinates,
-
-            style: {
-              ...k.style,
-              width: 8,
-              isClose: true,
-              label: {},
-              color: "yellow",
-              // materialType: map3dduk.MaterialType.Other,
-              // material: map3dduk.MaterialUtil.createMaterialProperty(
-              //   map3dduk.MaterialType.Spriteline,
-              //   {
-              //     color: Cesium.Color.GREEN,
-              //     // duration: 20000,
-              //     duration: 1000,
-              //     image: "images/line-arrow-dovetail.png",
-              //   }
-              // ),
-            },
-          });
-          templayer.addGraphic(polyline);
-        } else if (k.type === "billboard") {
-          const [x, y, z] = k.coordinates;
-          const point = new map3dduk.graphic.BillboardEntity({
-            id: k.id,
-            position: [x, y, 22.5],
-            popupOptions: {
-              html: `<div class="waper">
-              <div class="title">${k.style.label?.text}</div>
-              <div class="content"> 
-                <div class="content-left">
-                <video src='http://data.mars3d.cn/file/video/lukou.mp4' controls autoplay style="width: 230px;" ></video>
-                
-                </div>
-                  
-              </div>
-           
-      </div>`,
-              template: "<div>{{content}}</div>",
-              closeButton: true,
-              className: "popup-camera",
-              width: 400,
-              minHeight: 250,
-              offsetX: 150,
-              offsetY: 30,
-            },
-
-            style: {
-              ...k.style,
-              label: {},
-
-              image: k.style.image,
-              width: 30,
-              height: 30,
-              highlight: {
-                type: map3dduk.EventType.click,
-                hightLightStyle: {
-                  height: 50,
-                  width: 50,
-                },
-              },
-            },
-          });
-
-          templayer.addGraphic(point);
-          // point.bindHighlight({
-          //   type: map3dduk.EventType.mouseMove,
-          //   hightLightStyle: {
-          //     height: 150,
-          //     width: 150,
-          //   },
-          // })
-        }else if (k.type === "point") {
-          const [x, y, z] = k.coordinates;
-          const point = new map3dduk.graphic.BillboardEntity({
-            id: k.id,
-            position: k.coordinates,
-            popupOptions: {
-              html: `<div class="waper">
-              <div class="title">${k.style.label?.text}</div>
-              <div class="content"> 
-                <div class="content-left">
-                <video src='http://data.mars3d.cn/file/video/lukou.mp4' controls autoplay style="width: 230px;" ></video>
-                
-                </div>
-                  
-              </div>
-           
-      </div>`,
-              template: "<div>{{content}}</div>",
-              closeButton: true,
-              className: "popup-camera",
-              width: 400,
-              minHeight: 250,
-              offsetX: 150,
-              offsetY: 30,
-            },
-
-            style: {
-              ...k.style,
-              
-
-             
-              highlight: {
-                type: map3dduk.EventType.click,
-                hightLightStyle: {
-                  height: 50,
-                  width: 50,
-                },
-              },
-            },
-          });
-
-          templayer.addGraphic(point);
-          // point.bindHighlight({
-          //   type: map3dduk.EventType.mouseMove,
-          //   hightLightStyle: {
-          //     height: 150,
-          //     width: 150,
-          //   },
-          // })
-        }
-      });
     }
   }, []);
+
+  const renderDara = (data) => {
+    data.forEach((k, index) => {
+      if (k.type === "polygon") {
+        const polygon = new map3dduk.graphic.PolygonEntity({
+          id: k.id,
+          positions: k.coordinates,
+
+          popupOptions: {
+            html: `<div class="waper">
+                    <div class="title">${k.style.label?.text}</div>
+                    <div class="content">
+                      <div class="content-left"><img src="${
+                        k.properties?.type === "live"
+                          ? `images/people-${index + 1}.jpg`
+                          : "images/glass.png"
+                      }"/></div>
+                        <div class="content-right">
+                        <ul>
+                        ${getContent(k)}
+                        </ul>
+                      </div>
+                    </div>
+
+            </div>`,
+            template: "<div>{{content}}</div>",
+            closeButton: true,
+            className: "popup-people",
+            width: 500,
+            minHeight: 270,
+            offsetX: 250,
+            offsetY: 30,
+          },
+          style: {
+            ...k.style,
+            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+            perPositionHeight: false,
+            opacity: 0.3,
+            highlight: {
+              type: map3dduk.EventType.click,
+              hightLightStyle: {
+                opacity: 0.8,
+              },
+            },
+
+            label: {
+              ...k.style.label,
+              background: true,
+              backgroundColor: "#454646",
+              backgroundOpacity: 0.5,
+              addHeight: 10,
+              color: "white",
+              heightReference: Cesium.HeightReference.NONE,
+            },
+          },
+        });
+
+        templayer.addGraphic(polygon);
+      } else if (k.type === "polyline") {
+        const polyline = new map3dduk.graphic.PolylineEntity({
+          id: k.id,
+          positions: k.coordinates,
+
+          style: {
+            ...k.style,
+            width: 8,
+            isClose: false,
+            label: {},
+            color: "yellow",
+            // materialType: map3dduk.MaterialType.Other,
+            // material: map3dduk.MaterialUtil.createMaterialProperty(
+            //   map3dduk.MaterialType.Spriteline,
+            //   {
+            //     color: Cesium.Color.GREEN,
+            //     // duration: 20000,
+            //     duration: 1000,
+            //     image: "images/line-arrow-dovetail.png",
+            //   }
+            // ),
+          },
+        });
+        templayer.addGraphic(polyline);
+      } else if (k.type === "billboard") {
+        const [x, y, z] = k.coordinates;
+        const point = new map3dduk.graphic.BillboardEntity({
+          id: k.id,
+          position: [x, y, 22.5],
+          popupOptions: {
+            html: `<div class="waper">
+            <div class="title">${k.style.label?.text}</div>
+            <div class="content"> 
+              <div class="content-left">
+              <video src='http://data.mars3d.cn/file/video/lukou.mp4' controls autoplay style="width: 230px;" ></video>
+              
+              </div>
+                
+            </div>
+         
+    </div>`,
+            template: "<div>{{content}}</div>",
+            closeButton: true,
+            className: "popup-camera",
+            width: 400,
+            minHeight: 250,
+            offsetX: 150,
+            offsetY: 30,
+          },
+
+          style: {
+            ...k.style,
+            label: {},
+
+            image: k.style.image,
+            width: 30,
+            height: 30,
+            highlight: {
+              type: map3dduk.EventType.click,
+              hightLightStyle: {
+                height: 50,
+                width: 50,
+              },
+            },
+          },
+        });
+
+        templayer.addGraphic(point);
+        // point.bindHighlight({
+        //   type: map3dduk.EventType.mouseMove,
+        //   hightLightStyle: {
+        //     height: 150,
+        //     width: 150,
+        //   },
+        // })
+      } else if (k.type === "point") {
+        const [x, y, z] = k.coordinates;
+        const point = new map3dduk.graphic.BillboardEntity({
+          id: k.id,
+          position: k.coordinates,
+          popupOptions: {
+            html: `<div class="waper">
+            <div class="title">${k.style.label?.text}</div>
+            <div class="content"> 
+              <div class="content-left">
+              <video src='http://data.mars3d.cn/file/video/lukou.mp4' controls autoplay style="width: 230px;" ></video>
+              
+              </div>
+                
+            </div>
+         
+    </div>`,
+            template: "<div>{{content}}</div>",
+            closeButton: true,
+            className: "popup-camera",
+            width: 400,
+            minHeight: 250,
+            offsetX: 150,
+            offsetY: 30,
+          },
+
+          style: {
+            ...k.style,
+
+            highlight: {
+              type: map3dduk.EventType.click,
+              hightLightStyle: {
+                height: 50,
+                width: 50,
+              },
+            },
+          },
+        });
+
+        templayer.addGraphic(point);
+        // point.bindHighlight({
+        //   type: map3dduk.EventType.mouseMove,
+        //   hightLightStyle: {
+        //     height: 150,
+        //     width: 150,
+        //   },
+        // })
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (mapCache.current && templayer) {
+      templayer.removeAllGraphic();
+
+      renderDara(mapDataConfig[menuMode].data);
+    }
+  }, [menuMode]);
 
   const handlerClick = () => {
     if (drawlayer) {

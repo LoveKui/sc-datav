@@ -3,35 +3,8 @@
  * @Author: duk
  * @Date: 2026-01-14 21:22:47
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-15 00:30:22
+ * @LastEditTime: 2026-01-15 07:56:27
  */
-export const mapDataConfig = {
-  overview: {
-    title: "基本情况",
-    laye: {
-      name: "overviewLayer",
-    },
-    info: [
-      "区域面积:约1700平方米",
-      "活动场地面积:约1500平方米",
-      "场地最大承载人流:约3000人",
-      "活动区域最大客流:约1000人",
-      "场地通道:7处",
-    ],
-  },
-  responsePlan: {
-    layer: {
-      name: "responsePlanLayer",
-    },
-    info: [
-      "活动区域接近最大客流时:",
-      "1、场地南北两端用铁马、警戒带封控;",
-      "2、A-G处配1警2保安采取只出不进措施;",
-      "3、H、I处各安排20名警力进行穿插隔离人群",
-    ],
-    title: "应急处理",
-  },
-};
 
 export const initData = [
   {
@@ -1965,3 +1938,35 @@ export const overviewData = [
     ],
   },
 ];
+
+export const mapDataConfig = {
+  overview: {
+    title: "基本情况",
+    laye: {
+      name: "overviewLayer",
+    },
+    info: [
+      "区域面积:约1700平方米",
+      "活动场地面积:约1500平方米",
+      "场地最大承载人流:约3000人",
+      "活动区域最大客流:约1000人",
+      "场地通道:7处",
+    ],
+    data: overviewData
+  },
+  responsePlan: {
+    layer: {
+      name: "responsePlanLayer",
+    },
+    info: [
+      "活动区域接近最大客流时:",
+      "1、场地南北两端用铁马、警戒带封控;",
+      "2、A-G处配1警2保安采取只出不进措施;",
+      "3、H、I处各安排20名警力进行穿插隔离人群",
+    ],
+    title: "应急处理",
+    data:initData
+  },
+};
+
+

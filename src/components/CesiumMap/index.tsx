@@ -3,7 +3,7 @@
  * @Author: duk
  * @Date: 2026-01-14 16:20:45
  * @LastEditors: Please set LastEditors
- * @LastEditTime: 2026-01-14 23:55:09
+ * @LastEditTime: 2026-01-15 08:07:17
  */
 import React, {
   useEffect,
@@ -49,7 +49,7 @@ const Index = forwardRef<MapRef, Props>((props, ref) => {
 
       const map = new map3dduk.Map("map", {
         terrain: {
-          show: true,
+          show: false,
           // url: "/terrain",
         },
 
